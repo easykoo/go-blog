@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.profile"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    {{template "layout/back_nav" .}}
+    {{template "layout/left" .}}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{tsl .Session.Lang "label.profile"}}</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        {{template "layout/message" .}}
+        <div class="row">
+            <div class="col-lg-12">
+                <form id="profileForm" role="form" class="form-horizontal" method="post"
+                      action="/profile/profile">
+
+                    <input type="text" id="id" name="userId" value="{{.Session.SignedUser.Id}}" hidden>
+                    <input type="text" id="version" value="{{.Session.SignedUser.Version}}" name="version" hidden>
+
+                    <div class="form-group">
+                        <label for="fullName" class="col-sm-2 control-label">
+                            <span style="color: red">*</span>
+                            {{tsl .Session.Lang "label.full.name"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="fullName" class="form-control" name="fullName"
+                                   value="{{.Session.SignedUser.FullName}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.gender"}}
+                        </label>
+
+                        <div class="col-sm-1">
+                            <div class="radio">
+                                <label>
+                                    {{if equal .Session.SignedUser.Gender 1}}
+                                    <input type="radio" name="gender" value="1" checked>
+                                    {{else}}
+                                    <input type="radio" name="gender" value="1">
+                                    {{end}}
+                                    {{tsl .Session.Lang "label.male"}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-1">
+                            <div class="radio">
+                                <label>
+                                    {{if equal .Session.SignedUser.Gender 2}}
+                                    <input type="radio" name="gender" value="2" checked>
+                                    {{else}}
+                                    <input type="radio" name="gender" value="2">
+                                    {{end}}
+                                    {{tsl .Session.Lang "label.female"}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="radio">
+                                <label>
+                                    {{if equal .Session.SignedUser.Gender 0}}
+                                    <input type="radio" name="gender" value="0" checked>
+                                    {{else}}
+                                    <input type="radio" name="gender" value="0">
+                                    {{end}}
+                                    {{tsl .Session.Lang "label.secret"}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 control-label gender"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="qq" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.qq"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="qq" class="form-control" name="qq"
+                                   value="{{.Session.SignedUser.Qq}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tel" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.tel"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="tel" class="form-control" name="tel"
+                                   value="{{.Session.SignedUser.Tel}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.email"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="email" class="form-control" name="email"
+                                   value="{{.Session.SignedUser.Email}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postcode" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.postcode"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="postcode" class="form-control" name="postcode"
+                                   value="{{.Session.SignedUser.Postcode}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.address"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="address" class="form-control" name="address"
+                                   value="{{.Session.SignedUser.Address}}">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-4">
+                            <button type="submit" class="btn btn-success btn-block">
+                                {{tsl .Session.Lang "label.change"}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Core Scripts - Include with every page -->
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/jquery.validate.method.js"></script>
+<script src="/js/jquery.metisMenu.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/easykoo.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#profile').toggleClass('active').children('ul').collapse('toggle');
+        $('#changeProfile').css({"background": "#DDDDDD"});
+
+        $("#profileForm").validate({
+            rules: {
+                fullName: {
+                    required: true,
+                    stringCheck: true
+                },
+                gender: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true,
+                    remote: "/profile/checkEmail"
+                }
+            },
+            messages: {
+                fullName: {
+                    required: '{{tsl .Session.Lang "message.error.required"}}',
+                    stringCheck: '{{tsl .Session.Lang "message.error.string.check"}}'
+                },
+                gender: '{{tsl .Session.Lang "message.error.required"}}',
+                email: {
+                    required: '{{tsl .Session.Lang "message.error.required"}}',
+                    email: '{{tsl .Session.Lang "message.error.wrong.email.format"}}',
+                    remote: '{{tsl .Session.Lang "message.error.already.exists"}}'
+                }
+            },
+            focusInvalid: true,
+            onkeyup: false,
+            errorClass: "error",
+            errorPlacement: function (error, element) {
+                if (element.attr("name") == "verifyCode")
+                    error.appendTo(element.parent("div").next("div").next("div"));
+                else if (element.attr("name") == "gender") {
+                    error.appendTo($(".gender"));
+                } else
+                    error.appendTo(element.parent("div").next("div"));
+            },
+            highlight: function (element, errorClass) {
+                if ($(element).attr("name") == "gender") {
+                    $(".gender").parent("div").addClass("has-error").removeClass("has-success");
+                } else
+                    $(element).parent("div").parent("div").addClass("has-error").removeClass("has-success");
+            },
+            success: function (label) {
+                label.parent("div").parent("div").removeClass("has-error").addClass("has-success");
+            },
+            submitHandler: function (form) {
+                form.submit();
+                return false;
+            }
+        });
+    })
+</script>
+</body>
+</html>

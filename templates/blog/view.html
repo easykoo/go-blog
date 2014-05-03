@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{.Response.Blog.Title}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/front.css" rel="stylesheet" type="text/css">
+    <script src="/js/jquery-1.10.2.min.js"></script>
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+{{$session:=.Session}}
+{{$res:=.Response}}
+{{template "layout/front_nav" .}}
+
+<div class="container">
+
+    <div class="row">
+
+        {{template "layout/blog_side" .}}
+
+        <div id="container" class="col-lg-9 pull-left">
+            <span class="h2">{{.Response.Blog.Title}}</span>
+            {{if $session.SignedUser}}
+            {{if equal $session.SignedUser.Id .Response.Blog.Author.Id}}
+            <a class="btn btn-default pull-right btn-edit" href='/blog/edit/{{.Response.Blog.Id}}'>
+                {{tsl $session.Lang "label.edit"}}
+            </a>
+            {{end}}
+            {{end}}
+            <hr>
+            <p class="gray" style="line-height: 25px">
+                {{.Response.Blog.Author.FullName}}
+
+                &nbsp;&nbsp;
+                <span class="fa fa-clock-o"></span>
+                {{tsl .Session.Lang "label.post.on"}}
+                {{if equal .Session.Lang "zh"}}
+                {{.Response.Blog.PublishDate | cnFormatTime}}
+                {{else}}
+                {{.Response.Blog.PublishDate | formatTime}}
+                {{end}}
+                &nbsp;&nbsp;
+                <i class="fa fa-comments"></i>&nbsp;<a href="#commentForm">{{.Response.Blog.GetCommentSize}}</a>
+                &nbsp;&nbsp;
+                <i class="fa fa-eye"></i>&nbsp;<a href="#commentForm">{{.Response.Blog.Visit}}</a>
+                {{with .Response.Blog.GetTags}}
+                &nbsp;&nbsp;
+                <i class="fa fa-tag fa-5"></i>
+                {{range .}}
+                <a class="label label-info tag" href="/blog/tag/{{.Name}}">{{.Name}}</a>
+                {{end}}
+                {{end}}
+            </p>
+            <hr>
+            {{.Response.Blog.AllContent | unescaped}}
+
+            <hr>
+            <!-- the comment box -->
+            <div>
+                <div class="form-group">
+                    <div class="row form-group">
+                        <div class="col-lg-4">
+                            <span class="h4">{{tsl .Session.Lang "label.leave.comment"}}:</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form role="form" id="commentForm" action="/blog/comment" method="post">
+                    <input name="blogId" type="text" value="{{.Response.Blog.Id}}" hidden="true">
+
+                    <div id="info" class="row form-group hidden">
+                        {{if .Session.SignedUser}}
+                        <div class="col-lg-2">
+                            <input name="name" type="text" id="name" placeholder='{{tsl .Session.Lang "label.name"}}'
+                                   class="form-control" value="{{.Session.SignedUser.FullName}}" disabled>
+                        </div>
+                        <div class="col-lg-4">
+                            <input name="email" type="text" id="email" placeholder='{{tsl .Session.Lang "label.email"}}'
+                                   class="form-control" value="{{.Session.SignedUser.Email}}" disabled>
+                        </div>
+                        {{else}}
+                        <div class="col-lg-2">
+                            <input name="name" type="text" id="name" placeholder='{{tsl .Session.Lang "label.name"}}'
+                                   class="form-control">
+                        </div>
+                        <div class="col-lg-4">
+                            <input name="email" type="text" id="email" placeholder='{{tsl .Session.Lang "label.email"}}'
+                                   class="form-control">
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-lg-12">
+                            <div id="editor" class="col-lg-12"></div>
+                            <textarea id="content" name="content" class="hidden"></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-lg-12">
+                            <button type="button" onclick="send()" class="btn btn-primary">
+                                {{tsl .Session.Lang "label.submit"}}
+                            </button>
+                            <button id="toggle" type="button" class="btn btn-default"
+                                    onclick="toggleAnonymous()">
+                                {{tsl .Session.Lang "label.more.info"}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <hr>
+            {{with .Response.Blog.GetComments}}
+            {{range $key,$val:=.}}
+            {{if equal $key 0}}{{else}}
+            <hr>
+            {{end}}
+            <div class="comment-line">
+                <h4 id='{{.Seq}}'>
+                    <small>#{{plus $key 1}}</small>
+                    <span>
+                    {{if .Name}}
+                    {{.Name}}
+                    {{else}}
+                    {{tsl $session.Lang "label.anonymous"}}
+                    {{end}}
+                    </span>
+                    <small>
+                        {{if privilege $session.SignedUser 5}}
+                        {{if .Ip}}
+                        <span id="{{.Seq}}from">
+                            <script type="text/javascript"
+                                    src="http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip={{.Ip}}"></script>
+                            <script type="text/javascript">
+                                $("#"+"{{.Seq}}from").text(remote_ip_info.country + remote_ip_info.province + remote_ip_info.city + remote_ip_info.district)</script>
+                        </span>
+                        {{end}}
+                        {{end}}
+                        <span>
+                        {{if equal $session.Lang "zh"}}
+                        {{.CreateDate | cnFormatTime}}
+                        {{else}}
+                        {{.CreateDate | formatTime}}
+                        {{end}}
+                        </span>
+                    </small>
+                <span class="button-group hidden">
+                {{if privilege $session.SignedUser 5}}
+                <button class="btn btn-danger btn-xs pull-right"
+                        onclick='deleteComment("{{$res.Blog.Id}}","{{.Seq}}")'>
+                    {{tsl $session.Lang "label.delete"}}
+                </button>
+                {{end}}
+                </span>
+                </h4>
+                <p>{{.Content | mdToHtml}}</p>
+            </div>
+            {{end}}
+            {{end}}
+
+        </div>
+
+    </div>
+
+    <hr>
+    {{template "layout/footer" .}}
+
+</div>
+<!-- /.container -->
+
+<!-- JavaScript -->
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/jquery.validate.method.js"></script>
+<script src="/js/bootbox.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/easykoo.js"></script>
+<script src="/epiceditor/js/epiceditor.min.js"></script>
+
+<script type="text/javascript">
+    var send = function () {
+        if ($('#email').val() != "" && (!$('#email').val().match(/^\w[\w|\.|\-]+@\w[\w|\.|\-]+\.[a-zA-Z]{2,4}$/))) {
+            return bootbox.alert('{{tsl .Session.Lang "message.error.wrong.email.format"}}', null);
+        }
+        if ($('#content').val() == "") {
+            return bootbox.alert('{{tsl .Session.Lang "message.error.content.required"}}', null);
+        }
+        if ($('#content').val().length >= 150) {
+            return bootbox.alert('{{tsl .Session.Lang "message.error.content.max.length"}}', null);
+        }
+
+        $.ajax('/blog/comment', {
+            dataType: 'json',
+            type: "POST",
+            data: {
+                blogId: '{{.Response.Blog.Id}}',
+                name: $('#name').val(),
+                www: $('#www').val(),
+                email: $('#email').val(),
+                content: $('#content').val()
+            },
+            success: function (data) {
+                if (!data.success) {
+                    bootbox.alert(data.message, null);
+                }
+                content: $('#content').val("");
+                window.location.reload();
+            }
+        });
+    }
+
+    var deleteComment = function (blogId, seq) {
+        bootbox.dialog({
+            message: '{{tsl .Session.Lang "message.sure.delete.record"}}',
+            title: '{{tsl .Session.Lang "label.delete.record"}}',
+            buttons: {
+                danger: {
+                    label: '{{tsl .Session.Lang "label.confirm"}}',
+                    className: "btn-danger",
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax('/blog/comment/delete/' + blogId + '/' + seq, {
+                                dataType: 'json',
+                                type: "GET",
+                                success: function (data) {
+                                    if (!data.success) {
+                                        bootbox.alert(data.message, null);
+                                    }
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    }
+                },
+                main: {
+                    label: '{{tsl .Session.Lang "label.cancel"}}',
+                    className: "btn-default",
+                    callback: null
+                }
+            }
+        });
+    }
+
+    var toggleAnonymous = function () {
+        $('#info').toggleClass('hidden')
+        if ($('#info').hasClass("hidden")) {
+            $('#toggle').text('{{tsl .Session.Lang "label.more.info"}}')
+        } else {
+            $('#toggle').text('{{tsl .Session.Lang "label.anonymous"}}')
+        }
+    }
+
+    $(document).ready(function () {
+        initTag();
+
+        $('.comment-line').hover(function () {
+            $(this).find(".button-group").removeClass("hidden");
+        }, function () {
+            $(this).find(".button-group").addClass("hidden");
+        });
+
+        var opts = {
+            container: 'editor',
+            textarea: 'content',
+            basePath: '/epiceditor',
+            clientSideStorage: true,
+            localStorageName: 'epiceditor',
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: 'epiceditor',
+                defaultContent: '',
+                autoSave: 100
+            },
+            theme: {
+                base: '/themes/base/epiceditor.css',
+                preview: '/themes/preview/github.css',
+                editor: '/themes/editor/epic-light.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
+
+        var editor = new EpicEditor(opts).load();
+        direct();
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+{{with .Messages}}
+<div class="form-group alert alert-success fade in">
+    <button type="button" class="close" data-dismiss="alert"
+            aria-hidden="true">&times;</button>
+    {{range .}}
+    {{.}}
+    {{end}}
+</div>
+{{end}}
+{{with .Errors}}
+{{range . }}
+<div class="form-group alert alert-danger fade in">
+    <button type="button" class="close" data-dismiss="alert"
+            aria-hidden="true">&times;</button>
+    {{.}}
+</div>
+{{end}}
+{{end}}

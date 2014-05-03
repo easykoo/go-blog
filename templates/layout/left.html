@@ -1,0 +1,122 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="sidebar-search">
+                <div class="input-group custom-search-form">
+                    <input type="text" class="form-control"/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+                <!-- /input-group -->
+            </li>
+            <li id="dashboard">
+                <a href="/admin/dashboard"><i class="fa fa-dashboard fa-fw"></i> {{tsl .Session.Lang "label.dashboard"}}</a>
+            </li>
+            {{if privilege .Session.SignedUser 2}}
+            <li id="user">
+                <a href="/user/all"><i class="fa fa-users fa-fw"></i> {{tsl .Session.Lang "label.user"}}</a>
+            </li>
+            {{end}}
+            {{if privilege .Session.SignedUser 3}}
+            <li id="feedback">
+                <a href="/feedback/all"><i class="fa fa-edit fa-fw"></i> {{tsl .Session.Lang "label.feedback"}}</a>
+            </li>
+            {{end}}
+            {{if privilege .Session.SignedUser 4}}
+            <!--<li id="news">
+                <a href="javascript:"><i class="fa fa-file-text-o fa-fw"></i> {{tsl .Session.Lang "label.news"}}
+                    <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li id="allNews">
+                        <a href="/news"> {{tsl .Session.Lang "label.all.news"}}</a>
+                    </li>
+                    <li id="publishNews">
+                        <a href="/news/publish"> {{tsl .Session.Lang "label.publish.news"}}</a>
+                    </li>
+                    <li id="allNotice">
+                        <a href="/notice"> {{tsl .Session.Lang "label.all.notices"}}</a>
+                    </li>
+                    <li id="publishNotice">
+                        <a href="/notice/publish"> {{tsl .Session.Lang "label.publish.notice"}}</a>
+                    </li>
+                </ul>
+                &lt;!&ndash; /.nav-second-level &ndash;&gt;
+            </li>-->
+            {{end}}
+            {{if privilege .Session.SignedUser 5}}
+            <!--<li id="product">
+                <a href="javascript:"><i class="fa fa-lightbulb-o fa-fw"></i> {{tsl .Session.Lang "label.product"}}
+                    <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li id="allProduct">
+                        <a href="/product"> {{tsl .Session.Lang "label.all.products"}}</a>
+                    </li>
+                    <li id="publishProduct">
+                        <a href="/product/publish"> {{tsl .Session.Lang "label.publish.product"}}</a>
+                    </li>
+                    <li id="editCategory">
+                        <a href="/product/edit"> {{tsl .Session.Lang "label.manage.category"}}</a>
+                    </li>
+                    <li id="createCategory">
+                        <a href="/product/create"> {{tsl .Session.Lang "label.create.category"}}</a>
+                    </li>
+                </ul>
+                &lt;!&ndash; /.nav-second-level &ndash;&gt;
+            </li>-->
+            {{end}}
+            {{if privilege .Session.SignedUser 5}}
+            <li id="blog">
+                <a href="javascript:"><i class="fa fa-file-text-o fa-fw"></i> {{tsl .Session.Lang "label.blog"}}
+                    <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li id="allBlog">
+                        <a href="/blog/all"> {{tsl .Session.Lang "label.all.blog"}}</a>
+                    </li>
+                    <li id="publishBlog">
+                        <a href="/blog/publish"> {{tsl .Session.Lang "label.publish.blog"}}</a>
+                    </li>
+                </ul>
+                <!-- /.nav-second-level -->
+            </li>
+            {{end}}
+            <li id="profile">
+                <a href="javascript:"><i class="fa fa-wrench fa-fw"></i> {{tsl .Session.Lang "label.profile"}}
+                    <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li id="changeProfile">
+                        <a href="/profile/profile"> {{tsl .Session.Lang "label.change.profile"}}</a>
+                    </li>
+                    <li id="preferences">
+                        <a href="/profile/preferences"> {{tsl .Session.Lang "label.preferences"}}</a>
+                    </li>
+                    <li id="password">
+                        <a href="/profile/password"> {{tsl .Session.Lang "label.change.password"}}</a>
+                    </li>
+                    <!--<li>
+                        <a href="javascript:">Third Level <span class="fa arrow"></span></a>
+                        <ul class="nav nav-third-level collapse">
+                            <li>
+                                <a href="javascript:">Third Level Item</a>
+                            </li>
+                            <li>
+                                <a href="javascript:">Third Level Item</a>
+                            </li>
+                        </ul>
+                        &lt;!&ndash; /.nav-third-level &ndash;&gt;
+                            </li>-->
+                </ul>
+                <!-- /.nav-second-level -->
+            </li>
+            {{if privilege .Session.SignedUser 1}}
+            <li id="settings">
+                <a href="/admin/settings"><i class="fa fa-gear fa-fw"></i> {{tsl .Session.Lang "label.settings"}}</a>
+            </li>
+            {{end}}
+        </ul>
+        <!-- /#side-menu -->
+    </div>
+    <!-- /.sidebar-collapse -->
+</nav>

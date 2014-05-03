@@ -1,0 +1,173 @@
+<nav class="navbar navbar-inverse navbar-static-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/index"><strong>{{.Session.Settings.AppName}}</strong></a>
+    </div>
+    <!-- /.navbar-header -->
+    <div class="collapse-in navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                    {{if equal .Session.Lang "en"}}En{{else}}Zh{{end}}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:changeLanguage('en')"> English</a></li>
+                    <li><a href="javascript:changeLanguage('zh')"> 中文/简体</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-top-links navbar-right">
+            {{if privilege .Session.SignedUser 3}}
+            <li id="feedbackDropdown" class="dropdown hidden">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:">
+                    <span id="feedbackCount" class="badge"></span>
+                    <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul id="feedback_notification" class="dropdown-menu dropdown-messages">
+                </ul>
+                <!-- /.dropdown-messages -->
+            </li>
+            {{end}}
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:">
+                    <i class="fa fa-user fa-fw"></i>
+                    {{.Session.SignedUser.FullName}}
+                    <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    {{if privilege .Session.SignedUser 1}}
+                    <li>
+                        <a href="/admin/settings">
+                            <i class="fa fa-gear fa-fw"></i>
+                            {{tsl .Session.Lang "label.settings"}}
+                        </a>
+                    </li>
+                    {{end}}
+                    <li>
+                        <a href="/profile/profile">
+                            <i class="fa fa-user fa-fw"></i>
+                            {{tsl .Session.Lang "label.profile"}}
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/user/logout">
+                            <i class="fa fa-sign-out fa-fw"></i>
+                            {{tsl .Session.Lang "label.logout"}}
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+    </div>
+</nav>
+
+{{if privilege .Session.SignedUser 3}}
+<script type="text/javascript">
+
+    var feedbackList = null;
+
+    var getFeedbackInfo = function () {
+        $.ajax({
+            dataType: "json",
+            type: "POST",
+            url: '/feedback/info',
+            data: null,
+            success: function (data) {
+                $('#feedback_notification').empty();
+                feedbackList = data.Array;
+                if (feedbackList == undefined || feedbackList.length == 0) {
+                    $('#feedbackDropdown').addClass("hidden")
+                } else {
+                    $('#feedbackDropdown').removeClass("hidden");
+                }
+                if (feedbackList != null) {
+                    var html = '';
+                    $.each(feedbackList, function (index, feedback) {
+                        html += '<li>'
+                                + '<a href="javascript:readFeedback(' + feedback.Id + ',getFeedbackInfo)">'
+                                + '<div>'
+                                + '<strong>' + (feedback.Name.length <= 10 ? feedback.Name : (feedback.Name.substr(0, 10) + '... ')) + '</strong>'
+                                + '<span class="pull-right text-muted">'
+                                + '<em>' + formatTime(feedback.CreateDate) + '</em>'
+                                + '</span>'
+                                + '</div>'
+                                + '<div>' + (feedback.Content.length <= 30 ? feedback.Content : (feedback.Content.substr(0, 30) + '... ')) + '</div>'
+                                + '</a>'
+                                + '</li>'
+                                + '<li class="divider"></li>'
+                    });
+
+                    html += '<li>'
+                            + '<a class="text-center" href="javascript:viewAllFeedback()">'
+                            + '<strong>{{tsl .Session.Lang "label.view.all.message"}}</strong>'
+                            + ' <i class="fa fa-angle-right"></i>'
+                            + '</a>'
+                            + '</li>'
+                    $('#feedback_notification').html(html);
+                }
+                if (data.Count == 0) {
+                    $('#feedbackCount').empty();
+                } else {
+                    $('#feedbackCount').text(data.Count);
+                }
+            }
+        });
+    };
+
+    var readFeedback = function (id, fnCallback1, fnCallback2) {
+        $.each(feedbackList, function (index, feedback) {
+            if (feedback.Id == id) {
+                bootbox.dialog({
+                    message: feedback.Content,
+                    title: feedback.Name + " - " + feedback.Email,
+                    buttons: {
+                        success: {
+                            label: '{{tsl .Session.Lang "label.confirm"}}',
+                            className: "btn-danger",
+                            callback: function () {
+                                $.ajax({
+                                    dataType: "json",
+                                    type: "POST",
+                                    url: '/feedback/view/' + id,
+                                    data: {id: id},
+                                    success: function (data) {
+                                        if (data.success) {
+                                            if (fnCallback1 != null)fnCallback1();
+                                            if (fnCallback2 != null)fnCallback2();
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        default: {
+                            label: '{{tsl .Session.Lang "label.cancel"}}',
+                            className: "btn-default"
+                        }
+                    }
+                });
+            }
+        });
+    };
+
+    var viewAllFeedback = function () {
+        location.href = "/feedback";
+    }
+
+    $(document).ready(function () {
+        getFeedbackInfo();
+        setInterval(getFeedbackInfo, 60000);
+    });
+
+</script>
+{{end}}

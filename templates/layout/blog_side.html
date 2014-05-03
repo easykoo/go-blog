@@ -1,0 +1,66 @@
+{{$session := .Session}}
+{{$lang := .Session.Lang}}
+<div id="side" class="col-lg-3 pull-right">
+<!--    <div class="well">
+        <h4>{{tsl $lang "label.search"}}</h4>
+
+        <div class="input-group">
+            <input type="text" class="form-control">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </span>
+        </div>
+    </div>-->
+
+    {{with .DbUtil.GetHotBlog}}
+    <div class="well" style="line-height: 25px">
+        <h4>{{tsl $lang "label.hot.blog"}}</h4>
+        <hr>
+        {{range .}}
+        <div class="row">
+            <div class="col-lg-12" style="padding-left: 0px">
+                <div class="col-lg-10" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><a href="/blog/view/{{.Id}}">{{.Title}}</a></div>
+                <div class="col-lg-2"><a class="badge" href="/blog/view/{{.Id}}#commentForm">{{.GetCommentSize}}</a></div>
+            </div>
+        </div>
+        {{end}}
+    </div>
+    {{end}}
+
+    {{with .DbUtil.GetRecentComments}}
+    <div class="well">
+        <h4>{{tsl $lang "label.latest.comments"}}</h4>
+        <hr>
+        {{range .}}
+        <div class="row">
+            <div class="col-lg-12">
+                <a href="/blog/view/{{.Blog.Id}}#{{.Seq}}">
+                    {{if .Name}}
+                    {{.Name}}
+                    {{else}}
+                    {{tsl $session.Lang "label.anonymous"}}
+                    {{end}}
+                </a>:
+                <span>{{.Content}}</span>
+            </div>
+        </div>
+        {{end}}
+    </div>
+    {{end}}
+
+    {{with .Response.Tags}}
+    <div class="well">
+        <h4>{{tsl $lang "label.tags"}}</h4>
+        <hr>
+        <div class="row">
+            <div class="col-lg-12">
+                {{range .}}
+                <a class="btn btn-info btn-xs tag" href="/blog/tag/{{.Name}}">{{.Name}} <span class="badge hidden">{{.Count}}</span></a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    {{end}}
+</div>

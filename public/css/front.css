@@ -1,0 +1,37 @@
+body {
+    margin-top: 100px;
+    word-wrap: break-word;
+}
+
+@media (max-width: 460px) {
+    #side {
+        width: 100%;
+    }
+}
+
+footer {
+    padding: 30px 0;
+}
+
+.tag {
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.gray {
+    color: #ABABAB;
+}
+
+.container {
+    font-family: Ubuntu, Consolas, "Microsoft YaHei", Verdana, Tahoma, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.page {
+    text-align: center;
+}
+
+#editor {
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 4px;
+}

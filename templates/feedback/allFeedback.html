@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.all.feedback"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    {{template "layout/back_nav" .}}
+    {{template "layout/left" .}}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{tsl .Session.Lang "label.all.feedback"}}</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a class="btn btn-danger" id="delete"><i class="fa fa-trash-o fa-fw"></i>
+                            {{tsl .Session.Lang "label.delete"}}</a>
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover" id="dataTable">
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" onchange='selectAll(this)' id="selectAll"/></th>
+                                    <th>{{tsl .Session.Lang "label.name"}}</th>
+                                    <th>{{tsl .Session.Lang "label.email"}}</th>
+                                    <th>{{tsl .Session.Lang "label.content"}}</th>
+                                    <th>{{tsl .Session.Lang "label.create.date"}}</th>
+                                    <th>{{tsl .Session.Lang "label.actions"}}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+</div>
+
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.metisMenu.js"></script>
+<script src="/js/bootbox.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap.js"></script>
+<script src="/js/jquery.json.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/easykoo.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+var feedbackTable;
+
+function deleteFeedback(feedbackID) {
+    bootbox.dialog({
+        message: '{{tsl .Session.Lang "message.sure.delete.record"}}',
+        title: '{{tsl .Session.Lang "label.delete.record"}}',
+        buttons: {
+            main: {
+                label: '{{tsl .Session.Lang "label.cancel"}}',
+                className: "btn-default",
+                callback: null
+            },
+            danger: {
+                label: '{{tsl .Session.Lang "label.yes"}}',
+                className: "btn-danger",
+                callback: function (result) {
+                    if (result) {
+                        $.ajax('/feedback/delete/' + feedbackID, {
+                            dataType: 'json',
+                            type: "GET",
+                            success: function (data) {
+                                if (!data.success) {
+                                    bootbox.alert(data.message, null);
+                                }
+                                getFeedbackInfo();
+                                feedbackTable.fnClearTable(0);
+                                feedbackTable.fnDraw();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+}
+
+var viewFeedback = function (id) {
+    var feedbackList = feedbackTable.fnGetData();
+    $.each(feedbackList, function (index, feedback) {
+        if (feedback.Id == id) {
+            bootbox.dialog({
+                message: feedback.Content,
+                title: feedback.Name + " - " + feedback.Email,
+                buttons: {
+                    success: {
+                        label: '{{tsl .Session.Lang "label.confirm"}}',
+                        className: "btn-danger",
+                        callback: function () {
+                            if (!feedback.Viewed) {
+                                $.ajax({
+                                    dataType: "json",
+                                    type: "GET",
+                                    url: '/feedback/view/' + id,
+                                    success: function (data) {
+                                        if (!data.success) {
+                                            bootbox.alert(data.message, null);
+                                        }
+                                        getFeedbackInfo();
+                                        feedbackTable.fnClearTable(0);
+                                        feedbackTable.fnDraw();
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    default: {
+                        label: '{{tsl .Session.Lang "label.cancel"}}',
+                        className: "btn-default"
+                    }
+                }
+            });
+        }
+    });
+};
+
+var feedbackArray = [0];
+
+var selectFeedback = function (obj, feedbackId) {
+    if ($(obj).prop("checked")) {
+        $.inArray(feedbackId, feedbackArray) < 0 ? feedbackArray.push(feedbackId) : null;
+    } else {
+        feedbackArray.splice(jQuery.inArray(feedbackId, feedbackArray), 1);
+    }
+}
+
+var selectAll = function (obj) {
+    if (obj.checked) {
+        $("input[name='selectFlag']:checkbox").each(function () {
+            $(this).attr("checked", false);
+            $(this).click();
+        })
+    } else {
+        $("input[name='selectFlag']:checkbox").each(function () {
+            $(this).attr("checked", true);
+            $(this).click();
+        })
+    }
+}
+
+var unSelectAll = function () {
+    $("input:checkbox").each(function () {
+        $(this).attr("checked", false);
+    })
+}
+
+var getAllFeedback = function () {
+    feedbackTable = $('#dataTable').dataTable({
+        bPaginate: true,
+        bProcessing: true,
+        bServerSide: true,
+        bSort: true,
+        bFilter: false,
+        bAutoWidth: true,
+        iDisplayStart: 0,
+        iDisplayLength: 10,
+        bLengthChange: true,
+        sPaginationType: 'full_numbers',
+        sAjaxSource: '/feedback/all',
+        aaSorting: [
+            [4, 'desc']
+        ],
+        fnServerData: function (sSource, aoData, fnCallback) {
+            $.ajax({
+                dataType: "json",
+                type: "POST",
+                "url": sSource,
+                "data": aoData,
+                "success": fnCallback
+            });
+        },
+        "aoColumns": [
+            { "mData": "Id",
+                "mRender": function (mData) {
+                    return '<input type="checkbox" name="selectFlag" onchange="selectAccount(this,' + mData + ')"/>';
+                },
+                "sWidth": 10
+            },
+            { "mData": "Name",
+                "mRender": function (mData) {
+                    return mData.length <= 10 ? mData : (mData.substr(0, 10) + '... ')
+                },
+                "sWidth": 80
+            },
+            { "mData": "Email",
+                "mRender": function (mData) {
+                    return mData.length <= 20 ? mData : (mData.substr(0, 20) + '... ')
+                },
+                "sWidth": 150
+            },
+            { "mData": "Content",
+                "mRender": function (mData) {
+                    return mData.length <= 50 ? mData : (mData.substr(0, 50) + '... ')
+                },
+                "sWidth": 300
+            },
+            { "mData": "CreateDate",
+                "mRender": function (mData) {
+                    return formatTime(mData)
+                },
+                "sWidth": 160
+            },
+            { "mData": "Viewed", "sWidth": 70}
+        ],
+        "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+
+            var html = '<div class="btn-group"><a class="btn btn-primary" href="javascript:"><i class="fa fa-gavel fa-fw"></i></a>' +
+                    '<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="javascript:"><span class="fa fa-caret-down"></span></a>' +
+                    '<ul class="dropdown-menu">' +
+                    '<li><a href="javascript:deleteFeedback(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
+                    + '<strong> {{tsl .Session.Lang "label.delete"}}</strong>'
+                    + '</a></li>';
+            html += '<li><a href="javascript:viewFeedback(' + aData.Id + ')"><i class="fa fa-eye fa-fw"></i>'
+                    + '<strong> {{tsl .Session.Lang "label.view"}}</strong>'
+                    + '</a></li>';
+            html += '</ul></div>';
+            $('td:eq(5)', nRow).html(html);
+
+            if (aData.Viewed) {
+                $(nRow).css({"color": "#BBBBBB"})
+            }
+            return nRow;
+        },
+        "oLanguage": {
+            sUrl: [ '/css/{{tsl .Session.Lang "language"}}.txt']
+        },
+        "aoColumnDefs": [
+            { "bSortable": false, "aTargets": [ 0 ] },
+            { "bSortable": false, "aTargets": [ 5 ] }
+        ]
+    });
+}
+
+$(document).ready(function () {
+    $('#feedback').css({"background": "#DDDDDD"});
+    getAllFeedback();
+
+    $('#delete').click(function () {
+        if (feedbackArray.length <= 1) {
+            bootbox.alert('{{tsl .Session.Lang "message.error.please.select"}}', null);
+            return;
+        }
+        bootbox.dialog({
+            message: '{{tsl .Session.Lang "message.sure.batch.delete.records"}}',
+            title: '{{tsl .Session.Lang "title.batch.delete.records"}}',
+            buttons: {
+                main: {
+                    label: '{{tsl .Session.Lang "label.cancel"}}',
+                    className: "btn-default",
+                    callback: null
+                },
+                danger: {
+                    label: '{{tsl .Session.Lang "label.yes"}}',
+                    className: "btn-danger",
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                dataType: "json",
+                                type: "POST",
+                                url: '/feedback/delete',
+                                data: {feedbackArray: $.toJSON(feedbackArray)},
+                                traditional: true,
+                                success: function (data) {
+                                    if (!data.success) {
+                                        bootbox.alert(data.message, null);
+                                    }
+                                    unSelectAll();
+                                    feedbackArray = [0];
+                                    feedbackTable.fnClearTable(0);
+                                    feedbackTable.fnDraw();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+    });
+});
+
+</script>
+</body>
+</html>

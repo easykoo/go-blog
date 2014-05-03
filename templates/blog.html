@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.blog"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/front.css" rel="stylesheet" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+{{template "layout/front_nav" .}}
+
+<div class="container">
+
+    <div class="row">
+
+        {{template "layout/blog_side" .}}
+
+        <div class="col-lg-9 pull-left">
+            {{$session := .Session}}
+            {{range .Response.Blog.Result}}
+            <div class="blog-line">
+            <span class="h3">
+            <a href='/blog/view/{{.Id}}'>{{.Title}}</a>
+
+            {{if $session.SignedUser}}
+            {{if equal $session.SignedUser.Id .Author.Id}}
+            &nbsp;&nbsp;
+            <a class="btn btn-default pull-right btn-edit hidden" href='/blog/edit/{{.Id}}'>
+                {{tsl $session.Lang "label.edit"}}
+            </a>
+            {{end}}
+            {{end}}
+            </span>
+                <br>
+            <span class="gray" style="line-height: 25px">
+            {{.Author.FullName}}
+
+            &nbsp;&nbsp;<i class="fa fa-clock-o fa-1"></i>
+            {{tsl $session.Lang "label.post.on"}}
+            {{if equal $session.Lang "zh"}}
+            {{.PublishDate | cnFormatTime}}
+            {{else}}
+            {{.PublishDate | formatTime}}
+            {{end}}
+            &nbsp;&nbsp;
+            <i class="fa fa-comments"></i>&nbsp;<a href="/blog/view/{{.Id}}#commentForm">{{.GetCommentSize}}</a>
+            &nbsp;&nbsp;
+            <i class="fa fa-eye"></i>&nbsp;<a href="#commentForm">{{.Visit}}</a>
+            &nbsp;&nbsp;
+            {{with .GetTags}}
+            <i class="fa fa-tag fa-5"></i>
+            {{range .}}
+            <a class="label label-info tag" href="/blog/tag/{{.Name}}">{{.Name}}</a>
+            {{end}}
+            {{end}}
+            </span>
+                <br>
+                <br>
+                {{.Summary | unescaped}}
+                <a class="btn btn-default" href='/blog/view/{{.Id}}'>
+                    {{tsl $session.Lang "label.read.more"}}
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                <hr>
+            </div>
+            {{end}}
+
+            <!-- pager -->
+            <div id="page" class="page"></div>
+        </div>
+
+    </div>
+
+    <hr>
+    {{template "layout/footer" .}}
+
+</div>
+<!-- /.container -->
+
+<!-- JavaScript -->
+<script src="/js/jquery-1.10.2.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/easykoo.js"></script>
+
+<script type="text/javascript">
+    var tag = '{{.Response.Tag}}';
+    var pageNo = parseInt('{{.Response.Blog.GetPageNo}}');
+    var totalPage = parseInt('{{.Response.Blog.GetTotalPage}}');
+
+    var goToPage = function (pageNo) {
+        var url = "";
+        if (tag == "") {
+            url = '/blog?page=' + pageNo;
+        } else if (tag != "") {
+            url = '/blog/tag/' + tag + '?page=' + pageNo;
+        }
+        window.location.href = url;
+    }
+
+    $(document).ready(function () {
+        initTag();
+
+        $('.blog-line').hover(function () {
+            $(this).find(".btn-edit").removeClass("hidden");
+        }, function () {
+            $(this).find(".btn-edit").addClass("hidden");
+        });
+
+        setupPage($('#page'), pageNo, totalPage);
+
+        direct();
+    });
+</script>
+
+</body>
+
+</html>

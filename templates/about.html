@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.about.us"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/front.css" rel="stylesheet" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+
+    {{with .Session.SignedUser}}
+    {{if privilege . 1}}
+    <link rel="stylesheet" type="text/css" href="/codemirror/codemirror.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/codemirror/monokai.min.css">
+    <script type="text/javascript" src="/codemirror/codemirror.min.js"></script>
+    <script type="text/javascript" src="/codemirror/xml.min.js"></script>
+    <script type="text/javascript" src="/codemirror/formatting.min.js"></script>
+
+    <!-- include summernote -->
+    <link href="/css/summernote.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+    {{end}}
+    {{end}}
+
+</head>
+
+<body>
+
+{{template "layout/front_nav" .}}
+
+<div class="container">
+    <form id="settingsForm" method="post" action="/admin/about">
+        <div class="row">
+            <div class="col-lg-12">
+                <textarea id="about" name="about" hidden="true"></textarea>
+
+                <div class="summernote">{{ with .Session.Settings.About}}{{.|unescaped}}{{end}}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <br>
+            </div>
+        </div>
+        {{if .Session.SignedUser}}
+        {{if privilege .Session.SignedUser 1}}
+        <div class="row">
+            <div id="saveBtn" class="col-lg-2 hidden">
+                <a class="btn btn-success btn-block" href="javascript:save()">
+                    {{tsl .Session.Lang "label.save"}}
+                </a>
+            </div>
+            <div class="col-lg-2">
+                <a id="viewBtn" class="btn btn-default btn-block" href="javascript:viewToggle()">
+                    {{tsl .Session.Lang "label.edit"}}
+                </a>
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+    </form>
+    <hr>
+    {{template "layout/footer" .}}
+
+</div>
+
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/bootbox.min.js"></script>
+<script src="/js/easykoo.js"></script>
+
+<script type="text/javascript">
+
+    var mode = "VIEW";
+
+    var viewToggle = function () {
+        if (mode == "EDIT") {
+            view();
+            mode = "VIEW";
+            $('#viewBtn').text('{{tsl .Session.Lang "label.edit"}}')
+        } else {
+            edit();
+            mode = "EDIT";
+            $('#saveBtn').removeClass("hidden")
+            $('#viewBtn').text('{{tsl .Session.Lang "label.preview"}}')
+        }
+    }
+
+    var save = function () {
+        var about = $('.summernote').code();
+        $('#about').val(about);
+        submit();
+    };
+
+    var view = function () {
+        $('.summernote').destroy();
+    }
+
+    var edit = function () {
+        $('.summernote').summernote({
+            height: 400,
+            codemirror: {
+                theme: 'monokai'
+            }
+        });
+    }
+
+    var validateForm = function () {
+        if ($('.summernote').code() == "<p><br></p>") {
+            $('.summernote').focus();
+            bootbox.alert('{{tsl .Session.Lang "message.error.please.input.content"}}', null);
+            return false;
+        }
+        return true
+    }
+
+    var submit = function () {
+        if (validateForm()) {
+            $('#settingsForm').submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('#blog').toggleClass('active').children('ul').collapse('toggle');
+        $('#publishBlog').css({"background": "#DDDDDD"});
+
+        direct()
+    })
+</script>
+
+</body>
+
+</html>

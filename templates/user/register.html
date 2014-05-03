@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.sign.up"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/front.css" rel="stylesheet" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+{{template "layout/front_nav" .}}
+
+<div style="margin-top:100px;margin-bottom:200px;max-width: 400px;text-align: left" class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{{tsl .Session.Lang "label.please.sign.up"}}</h1>
+
+            <form role="form" action="register" method="post">
+                {{template "layout/message" .}}
+                <div class="form-group">
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder='{{tsl .Session.Lang "label.username"}}'
+                           value="{{.Response.User.Username}}" required>
+                    {{with .FieldErrors.username}}
+                    <div class="text-danger">{{.}}</div>
+                    {{end}}
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder='{{tsl .Session.Lang "label.password"}}'
+                           value="{{.Response.User.Password}}" required>
+                    {{with .FieldErrors.password}}
+                    <div class="text-danger">{{.}}</div>
+                    {{end}}
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="email" name="email"
+                           placeholder='{{tsl .Session.Lang "label.email"}}'
+                           value="{{.Response.User.Email}}" required>
+                    {{with .FieldErrors.email}}
+                    <div class="text-danger">{{.}}</div>
+                    {{end}}
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">
+                        {{tsl .Session.Lang "label.sign.up"}}
+                    </button>
+                </div>
+                <div class="form-group">
+                    {{tsl .Session.Lang "label.already.have.an.account"}}?
+                    <a href="/user/login">{{tsl .Session.Lang "label.sign.in.now"}}.</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/jquery-1.10.2.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/easykoo.js"></script>
+
+</body>
+
+</html>

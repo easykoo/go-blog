@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.edit.blog"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/codemirror/codemirror.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/codemirror/monokai.min.css">
+    <script type="text/javascript" src="/codemirror/codemirror.min.js"></script>
+    <script type="text/javascript" src="/codemirror/xml.min.js"></script>
+    <script type="text/javascript" src="/codemirror/formatting.min.js"></script>
+
+    <!-- include summernote -->
+    <link href="/css/summernote.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    {{template "layout/back_nav" .}}
+    {{template "layout/left" .}}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{tsl .Session.Lang "label.publish.blog"}}</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        {{template "layout/message" .}}
+        <div class="row">
+            <div class="col-lg-10">
+                <form id="blogForm" role="form" class="form-horizontal" method="post" action="/blog/publish">
+                    <input name="blogId" type="text" value="{{.Response.Blog.Id}}" hidden="true">
+                    <input name="version" type="text" value="{{.Response.Blog.Version}}" hidden="true">
+                    <input name="state" type="text" value="{{.Response.Blog.State}}" hidden="true">
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <h1 id="titleShow" hidden="true">{{.Response.Blog.Title}}</h1>
+                            <input type="text" id="title" class="form-control"
+                                   placeholder='{{tsl .Session.Lang "label.title"}}' value='{{.Response.Blog.Title}}'
+                                   name="title">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <textarea id="content" name="content" hidden="true"></textarea>
+
+                            <div class="summernote">{{ with .Response.Blog.Content}}{{.|unescaped}}{{end}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                            <input id="tags" name="tags" type="text" hidden="true">
+                            <span id="tagShow"></span>
+                        </div>
+                        {{if .Response.Tags}}
+                        <div class="col-sm-8">
+                            <small>{{tsl .Session.Lang "label.common.tags"}}:</small>
+                            <span>
+                                {{range .Response.Tags}}
+                                <span class="label label-info tag" onclick="addTag('{{.Name}}')">{{.Name}}</span>
+                                {{end}}
+                            </span>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="form-group">
+
+                        <div class="col-sm-2">
+                            <div class="input-group">
+                                <input id="tempTag" type="text" class="form-control"
+                                       placeholder='{{tsl .Session.Lang "label.tags"}}'>
+                                <span class="input-group-btn">
+                                    <button type="button" onclick="addTag($('#tempTag').val())" class="btn btn-info">
+                                        {{tsl .Session.Lang "label.add"}}
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{if equal .Response.Blog.State "PUBLISHED"}}{{else}}
+                        <div class="col-sm-2">
+                            <button type="button" onclick="save(true)" class="btn btn-primary btn-block">
+                                {{tsl .Session.Lang "label.publish"}}
+                            </button>
+                        </div>
+                        {{end}}
+                        <div class="col-sm-2">
+                            <button type="button" onclick="save(false)" class="btn btn-success btn-block">
+                                {{tsl .Session.Lang "label.save"}}
+                            </button>
+                        </div>
+                        <div class="col-sm-2">
+                            <button id="viewBtn" type="button" onclick="viewToggle()" class="btn btn-default btn-block">
+                                {{tsl .Session.Lang "label.preview"}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/bootbox.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/jquery.validate.method.js"></script>
+<script src="/js/jquery.metisMenu.js"></script>
+<script src="/js/jquery.json.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/easykoo.js"></script>
+
+<script type="text/javascript">
+
+    var tags = [];
+    var blogId = 0;
+    var version = 1;
+    var mode = "EDIT";
+
+    var viewToggle = function () {
+        if (mode == "EDIT") {
+            view();
+            mode = "VIEW";
+            $('#viewBtn').text('{{tsl .Session.Lang "label.edit"}}')
+        } else {
+            edit();
+            mode = "EDIT";
+            $('#viewBtn').text('{{tsl .Session.Lang "label.view"}}')
+        }
+    }
+
+    var save = function (publish) {
+        var action = publish ? '/blog/publish' : '/blog/save';
+        var content = $('.summernote').code();
+        $('#content').val(cutoff(content));
+        $('#blogForm').attr('action', action);
+        $('#tags').val(tags);
+        submit();
+    };
+
+    var view = function () {
+        $('#title').hide();
+        $('#titleShow').text($('#title').val());
+        $('#titleShow').show();
+        $('.summernote').destroy();
+    }
+
+    var edit = function () {
+        $('#title').show()
+        $('#titleShow').hide()
+        $('.summernote').summernote({
+            height: 400,
+            codemirror: {
+                theme: 'monokai'
+            }
+        });
+    }
+
+    var addTag = function (tag) {
+        if (tag.trim() == "") {
+            $('#tempTag').val("")
+            return;
+        }
+        if (tags.length >= 5) {
+            bootbox.alert('{{tsl .Session.Lang "message.error.max.tag"}}', null);
+            return;
+        }
+        $.inArray(tag, tags) < 0 ? tags.push(tag) : null;
+        $('#tempTag').val("")
+        updateTagShow();
+    }
+
+    var updateTagShow = function () {
+        var html = ""
+        for (var i = 0; i < tags.length; i++) {
+            html += '<a class="label label-info tag" href="javascript:deleteTag(\'' + tags[i] + '\')">' + tags[i] + '</a>&nbsp'
+        }
+        $('#tagShow').html(html)
+    }
+
+    var deleteTag = function (tag) {
+        tags.splice(jQuery.inArray(tag, tags), 1);
+        updateTagShow();
+    }
+
+    var validateForm = function () {
+        var title = $('#title').val();
+        if (title == "") {
+            $('#title').focus()
+            bootbox.alert('{{tsl .Session.Lang "message.error.please.input.title"}}', null);
+            return false;
+        }
+
+        if ($('.summernote').code() == "<p><br></p>") {
+            $('.summernote').focus();
+            bootbox.alert('{{tsl .Session.Lang "message.error.please.input.content"}}', null);
+            return false;
+        }
+        if (tags.length == 0) {
+            $('#tempTag').focus()
+            bootbox.alert('{{tsl .Session.Lang "message.error.please.add.tag"}}', null);
+            return false;
+        }
+        return true
+    }
+
+    var submit = function () {
+        if (validateForm()) {
+            $('#blogForm').submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('#blog').toggleClass('active').children('ul').collapse('toggle');
+        $('#publishBlog').css({"background": "#DDDDDD"});
+        edit();
+
+        '{{range.Response.Blog.GetTags}}'
+        tags.push('{{.Name}}');
+        '{{end}}'
+        updateTagShow();
+    })
+</script>
+</body>
+</html>

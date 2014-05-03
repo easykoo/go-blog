@@ -1,0 +1,89 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index">{{.Session.Settings.AppName}}</a>
+        </div>
+
+        <div class="collapse-in navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/blog">{{tsl .Session.Lang "label.blog"}}</a>
+                </li>
+                <li>
+                    <a href="/about">{{tsl .Session.Lang "label.about.us"}}</a>
+                </li>
+                <li>
+                    <a href="/contact">{{tsl .Session.Lang "label.contact.us"}}</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {{if .Session.SignedUser}}
+                <li class="dropdown">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                        {{.Session.SignedUser.FullName}}
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a href="/admin/dashboard">
+                                <i class="fa fa-user fa-fw"></i>&nbsp;&nbsp;
+                                {{tsl .Session.Lang "label.dashboard"}}
+                            </a>
+                        </li>
+                        {{if privilege .Session.SignedUser 1}}
+                        <li>
+                            <a href="/admin/settings">
+                                <i class="fa fa-gear fa-fw"></i>&nbsp;&nbsp;
+                                {{tsl .Session.Lang "label.settings"}}
+                            </a>
+                        </li>
+                        {{end}}
+                        <li class="divider"></li>
+                        <li>
+                            <a href="/profile/profile">
+                                <i class="fa fa-user fa-fw"></i>&nbsp;&nbsp;
+                                {{tsl .Session.Lang "label.profile"}}
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="/user/logout">
+                                <i class="fa fa-sign-out fa-fw"></i>&nbsp;&nbsp;
+                                {{tsl .Session.Lang "label.logout"}}
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                {{else}}
+                <li class="page-scroll">
+                    <a href="/user/login">{{tsl .Session.Lang "label.sign.in"}}</a>
+                </li>
+                <li class="page-scroll">
+                    <a href="/user/register">{{tsl .Session.Lang "label.sign.up"}}</a>
+                </li>
+                {{end}}
+                <li class="dropdown">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                        {{if equal .Session.Lang "en"}}En{{else}}Zh{{end}}
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:changeLanguage('en')"> English</a></li>
+                        <li><a href="javascript:changeLanguage('zh')"> 中文/简体</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>

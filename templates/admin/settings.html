@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.settings"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/codemirror/codemirror.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/codemirror/monokai.min.css">
+    <script type="text/javascript" src="/codemirror/codemirror.min.js"></script>
+    <script type="text/javascript" src="/codemirror/xml.min.js"></script>
+    <script type="text/javascript" src="/codemirror/formatting.min.js"></script>
+
+    <!-- include summernote -->
+    <link href="/css/summernote.css" rel="stylesheet">
+    <script src="/js/summernote.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    {{template "layout/back_nav" .}}
+    {{template "layout/left" .}}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{tsl .Session.Lang "label.settings"}}</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        {{template "layout/message" .}}
+        <div class="row">
+            <div class="col-lg-10">
+                <form id="settingsForm" role="form" class="form-horizontal" method="post" action="/admin/settings">
+                    <input name="settingsId" type="text" value='{{.Session.Settings.Id}}' hidden="true">
+                    <input name="version" type="text" value='{{.Session.Settings.Version}}' hidden="true">
+
+                    <div class="form-group">
+                        <label for="appName" class="col-sm-2 control-label">
+                            <span style="color: red">*</span>
+                            {{tsl .Session.Lang "label.app.name"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input id="appName" name="appName" type="text" class="form-control"
+                                   value='{{.Session.Settings.AppName}}'>
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="owner" class="col-sm-2 control-label">
+                            <span style="color: red">*</span>
+                            {{tsl .Session.Lang "label.owner"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            {{$user:=.Session.Settings.Owner}}
+                            <select id="owner" class="form-control" name="userId">
+                                {{range .Response.Users}}
+                                {{if equal $user.Id .Id}}
+                                <option value='{{.Id}}' selected>{{.Username}}</option>
+                                {{else}}
+                                <option value='{{.Id}}'>{{.Username}}</option>
+                                {{end}}
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="keywords" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.keywords"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <textarea id="keywords" name="keywords"
+                                      class="form-control">{{.Session.Settings.Keywords}}</textarea>
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-sm-2 control-label">
+                            {{tsl .Session.Lang "label.description"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <textarea id="description" name="description"
+                                      class="form-control">{{.Session.Settings.Description}}</textarea>
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-4">
+                            <button type="submit" class="btn btn-success btn-block">
+                                {{tsl .Session.Lang "label.change"}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/jquery.validate.method.js"></script>
+<script src="/js/jquery.metisMenu.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/easykoo.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#settings').css({"background": "#DDDDDD"});
+
+        $("#settingsForm").validate({
+            rules: {
+                appName: {
+                    required: true
+                },
+                owner: {
+                    required: true
+                }
+            },
+            messages: {
+                appName: '{{tsl .Session.Lang "message.error.required"}}',
+                gender: '{{tsl .Session.Lang "message.error.required"}}'
+            },
+            focusInvalid: true,
+            onkeyup: false,
+            errorClass: "error",
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div").next("div"));
+            },
+            highlight: function (element, errorClass) {
+                $(element).parent("div").parent("div").addClass("has-error").removeClass("has-success");
+            },
+            success: function (label) {
+                label.parent("div").parent("div").removeClass("has-error").addClass("has-success");
+            },
+            submitHandler: function (form) {
+                form.submit();
+                return false;
+            }
+        });
+    })
+</script>
+</body>
+</html>
