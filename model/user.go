@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/martini-contrib/binding"
+	"github.com/easykoo/binding"
 
 	. "github.com/easykoo/go-blog/common"
 

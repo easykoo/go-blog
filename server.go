@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/easykoo/sessions"
 	"github.com/go-martini/martini"
-	"github.com/martini-contrib/binding"
+	"github.com/easykoo/binding"
 	"github.com/martini-contrib/render"
 	"github.com/russross/blackfriday"
 

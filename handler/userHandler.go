@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/go-martini/martini"
-	"github.com/martini-contrib/binding"
+	"github.com/easykoo/binding"
 
 	. "github.com/easykoo/go-blog/common"
 	"github.com/easykoo/go-blog/middleware"
