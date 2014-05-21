@@ -104,6 +104,7 @@ func (self *Blog) Delete() error {
 	session := orm.NewSession()
 	defer session.Close()
 	_, err := session.Delete(self)
+	_, err = session.Exec("delete from comment where blog_id = ?", self.Id)
 	_, err = session.Exec("delete from tag where blog_id = ?", self.Id)
 	Log.Info("Blog ", self.Id, " deleted")
 	return err
