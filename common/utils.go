@@ -4,12 +4,14 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 var Log *SimpleLogger
@@ -79,4 +81,12 @@ func Expect(t *testing.T, a interface{}, b interface{}) {
 	if a != b {
 		t.Errorf("Expected %v (type %v) - Got %v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
 	}
+}
+
+func GenToken() string {
+	nano := time.Now().UnixNano()
+	rand.Seed(nano)
+	rndNum := rand.Int63()
+	uuid := Md5(Md5(strconv.FormatInt(nano, 10)) + Md5(strconv.FormatInt(rndNum, 10)))
+	return uuid
 }
