@@ -28,19 +28,19 @@ func (self *SessionInfo) GetSessionInfo() (sessionInfo SessionInfo) {
 
 func (self *SessionInfo) Insert() error {
 	_, err := orm.InsertOne(self)
-	Log.Info("SessionInfo ", self.Id, " inserted")
+	Log.Infol("SessionInfo ", self.Id, " inserted")
 	return err
 }
 
 func (self *SessionInfo) Update() error {
 	_, err := orm.Id(self.Id).Update(self)
-	Log.Info("SessionInfo ", self.Id, " updated")
+	Log.Infol("SessionInfo ", self.Id, " updated")
 	return err
 }
 
 func (self *SessionInfo) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Info("SessionInfo ", self.Id, " deleted")
+	Log.Infol("SessionInfo ", self.Id, " deleted")
 	return err
 }
 

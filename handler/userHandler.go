@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/go-martini/martini"
 	"github.com/easykoo/binding"
+	"github.com/go-martini/martini"
 
 	. "github.com/easykoo/go-blog/common"
 	"github.com/easykoo/go-blog/middleware"
@@ -32,7 +32,7 @@ func LoginHandler(ctx *middleware.Context, formErr binding.Errors, loginUser mod
 					return
 				}
 				ctx.S.Set("SignedUser", user)
-				Log.Info(user.Username, " login")
+				Log.Infol(user.Username, " login")
 				ctx.Redirect("/admin/dashboard")
 			} else {
 				ctx.Set("User", user)
@@ -190,7 +190,7 @@ func SetRole(ctx *middleware.Context) {
 	err := user.SetRole()
 	PanicIf(err)
 	ctx.Set("success", true)
-	Log.Debug("User: ", user.Id, " roleId set to ", roleId)
+	Log.Debugl("User: ", user.Id, " roleId set to ", roleId)
 	ctx.JSON(200, ctx.Response)
 }
 

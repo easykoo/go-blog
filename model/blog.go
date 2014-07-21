@@ -45,7 +45,7 @@ func (self *Blog) Insert() error {
 		self.Tags[key].Blog.Id = self.Id
 		session.Insert(self.Tags[key])
 	}
-	Log.Info("Blog ", self.Id, " inserted")
+	Log.Infol("Blog ", self.Id, " inserted")
 	return err
 }
 
@@ -90,13 +90,13 @@ func (self *Blog) Update() error {
 	for key, _ := range self.Tags {
 		session.Insert(self.Tags[key])
 	}
-	Log.Info("Blog ", self.Id, " updated!")
+	Log.Infol("Blog ", self.Id, " updated!")
 	return err
 }
 
 func (self *Blog) UpdateVisit() error {
 	_, err := orm.Id(self.Id).Cols("visit").Update(self)
-	Log.Info("Blog ", self.Id, " updated!")
+	Log.Infol("Blog ", self.Id, " updated!")
 	return err
 }
 
@@ -106,7 +106,7 @@ func (self *Blog) Delete() error {
 	_, err := session.Delete(self)
 	_, err = session.Exec("delete from comment where blog_id = ?", self.Id)
 	_, err = session.Exec("delete from tag where blog_id = ?", self.Id)
-	Log.Info("Blog ", self.Id, " deleted")
+	Log.Infol("Blog ", self.Id, " deleted")
 	return err
 }
 
@@ -143,7 +143,7 @@ func (self *Blog) DeleteBlogArray(array []int) error {
 	}
 	sql += ")"
 	_, err = orm.Exec(sql)
-	Log.Info("Blog Array: ", array, " deleted")
+	Log.Infol("Blog Array: ", array, " deleted")
 	return err
 }
 

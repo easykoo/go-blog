@@ -74,7 +74,7 @@ func (self *User) Insert() error {
 	self.CreateUser = "SYSTEM"
 	self.UpdateUser = "SYSTEM"
 	_, err := orm.InsertOne(self)
-	Log.Info(self.Username, " inserted")
+	Log.Infol(self.Username, " inserted")
 	return err
 }
 
@@ -82,13 +82,13 @@ func (self *User) Update() error {
 	self.Role = Role{}
 	self.Dept = Dept{}
 	_, err := orm.Id(self.Id).MustCols("gender").Update(self)
-	Log.Info("User ", self.Username, " updated")
+	Log.Infol("User ", self.Username, " updated")
 	return err
 }
 
 func (self *User) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Info("User ", self.Username, " deleted")
+	Log.Infol("User ", self.Username, " deleted")
 	return err
 }
 
@@ -103,14 +103,14 @@ func (self *User) DeleteUsers(array []int) error {
 	}
 	sql += ")"
 	_, err = orm.Exec(sql)
-	Log.Info("Users: ", array, " deleted")
+	Log.Infol("Users: ", array, " deleted")
 	return err
 }
 
 func (self *User) SetRole() error {
 	var err error
 	_, err = orm.Id(self.Id).MustCols("role_id").Update(&User{Role: self.Role, Version: self.Version})
-	Log.Info("User ", self.Username, " roleId set to ", self.Role.Id)
+	Log.Infol("User ", self.Username, " roleId set to ", self.Role.Id)
 	return err
 }
 
@@ -119,9 +119,9 @@ func (self *User) SetLock(lock bool) error {
 	self, err = self.GetUser()
 	_, err = orm.Id(self.Id).UseBool("locked").Update(&User{Locked: lock, Version: self.Version})
 	if lock {
-		Log.Info("User ", self.Username, " locked")
+		Log.Infol("User ", self.Username, " locked")
 	} else {
-		Log.Info("User ", self.Username, " unlocked")
+		Log.Infol("User ", self.Username, " unlocked")
 	}
 	return err
 }

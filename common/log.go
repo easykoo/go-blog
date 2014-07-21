@@ -16,22 +16,42 @@ func (s *SimpleLogger) Debugf(f string, m ...interface{}) (err error) {
 	return
 }
 
-func (s *SimpleLogger) Debug(m ...interface{}) (err error) {
+func (s *SimpleLogger) Debugl(m ...interface{}) (err error) {
 	s.logger.Debug(m...)
 	return
 }
 
-func (s *SimpleLogger) Err(m ...interface{}) (err error) {
+func (s *SimpleLogger) Debug(m string) (err error) {
+	s.logger.Debug(m)
+	return
+}
+
+func (s *SimpleLogger) Errl(m ...interface{}) (err error) {
 	s.logger.Err(m...)
 	return
 }
 
-func (s *SimpleLogger) Info(m ...interface{}) (err error) {
+func (s *SimpleLogger) Err(m string) (err error) {
+	s.logger.Err(m)
+	return
+}
+
+func (s *SimpleLogger) Infol(m ...interface{}) (err error) {
 	s.logger.Info(m...)
 	return
 }
 
-func (s *SimpleLogger) Warning(m ...interface{}) (err error) {
+func (s *SimpleLogger) Info(m string) (err error) {
+	s.logger.Info(m)
+	return
+}
+
+func (s *SimpleLogger) Warningl(m ...interface{}) (err error) {
 	s.logger.Warning(m...)
+	return
+}
+
+func (s *SimpleLogger) Warning(m string) (err error) {
+	s.logger.Warning(m)
 	return
 }
