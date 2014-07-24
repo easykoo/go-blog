@@ -53,13 +53,9 @@
                                     <th>{{tsl .Session.Lang "label.id"}}</th>
                                     <th>{{tsl .Session.Lang "label.username"}}</th>
                                     <th>{{tsl .Session.Lang "label.role"}}</th>
-                                    <th>{{tsl .Session.Lang "label.dept"}}</th>
                                     <th>{{tsl .Session.Lang "label.full.name"}}</th>
                                     <th>{{tsl .Session.Lang "label.gender"}}</th>
-                                    <th>{{tsl .Session.Lang "label.qq"}}</th>
-                                    <th>{{tsl .Session.Lang "label.tel"}}</th>
                                     <th>{{tsl .Session.Lang "label.email"}}</th>
-                                    <th>{{tsl .Session.Lang "label.address"}}</th>
                                     <th>{{tsl .Session.Lang "label.create.date"}}</th>
                                     <th>{{tsl .Session.Lang "label.actions"}}</th>
                                 </tr>
@@ -303,11 +299,6 @@ var getAllAccounts = function () {
                     return mData.Description
                 }
             },
-            { "mData": "dept_id",
-                "mRender": function (mData) {
-                    return mData.Description
-                }
-            },
             { "mData": "FullName"},
             { "mData": "Gender",
                 "mRender": function (mData) {
@@ -319,10 +310,7 @@ var getAllAccounts = function () {
                     return '{{tsl .Session.Lang "label.secret"}}'
                 }
             },
-            { "mData": "Qq"},
-            { "mData": "Tel"},
             { "mData": "Email"},
-            { "mData": "Address"},
             { "mData": "CreateDate",
                 "mRender": function (mData) {
                     return formatTime(mData)
@@ -334,20 +322,20 @@ var getAllAccounts = function () {
         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
             var html = '<div class="btn-group"><a class="btn btn-primary" href="javascript:"><i class="fa fa-gavel fa-fw"></i></a>' +
                     '<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="javascript:"><span class="fa fa-caret-down"></span></a>' +
-                    '<ul class="dropdown-menu">' +
-                    '<li><a href="javascript:deleteAccount(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
+                    '<ul class="dropdown-menu">';
+            if (aData.RoleId > 1) {
+				html += '<li><a href="javascript:deleteAccount(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
                     + '<strong> {{tsl .Session.Lang "label.delete"}}</strong>'
                     + '</a></li>';
-            if (!aData.Locked) {
-                html += '<li><a href="javascript:ban(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
-                        + '<strong> {{tsl .Session.Lang "label.ban"}}</strong>'
-                        + '</a></li>';
-            } else {
-                html += '<li><a href="javascript:lift(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
-                        + '<strong> {{tsl .Session.Lang "label.lift"}}</strong>'
-                        + '</a></li>';
-            }
-            if (aData.RoleId > 1) {
+            	if (!aData.Locked) {
+                	html += '<li><a href="javascript:ban(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
+                        	+ '<strong> {{tsl .Session.Lang "label.ban"}}</strong>'
+                        	+ '</a></li>';
+            	} else {
+                	html += '<li><a href="javascript:lift(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
+                        	+ '<strong> {{tsl .Session.Lang "label.lift"}}</strong>'
+                        	+ '</a></li>';
+            	}
                 html += '<li class="divider"></li><li><a href="javascript:setRole(' + aData.Id + ', true)"><i class="i"></i>'
                         + '<strong> {{tsl .Session.Lang "label.promote"}}</strong>'
                         + '</a></li>';
@@ -358,7 +346,7 @@ var getAllAccounts = function () {
                         + '</a></li>';
             }
             html += '</ul></div>';
-            $('td:eq(12)', nRow).html(html);
+            $('td:eq(8)', nRow).html(html);
 
             if (aData.Locked) {
                 $(nRow).css({"color": "#BBBBBB"})
@@ -370,7 +358,7 @@ var getAllAccounts = function () {
         },
         "aoColumnDefs": [
             { "bSortable": false, "aTargets": [ 0 ] },
-            { "bSortable": false, "aTargets": [ 12 ] }
+            { "bSortable": false, "aTargets": [ 8 ] }
         ]
     });
 }
