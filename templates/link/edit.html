@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="{{.Session.Settings.Keywords}}">
+    <meta name="description" content="{{.Session.Settings.Description}}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>{{tsl .Session.Lang "label.add.link"}} - {{.Session.Settings.AppName}}</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.min.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/js/jquery-1.10.2.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    {{template "layout/back_nav" .}}
+    {{template "layout/left" .}}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{tsl .Session.Lang "label.add.link"}}</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        {{template "layout/message" .}}
+        <div class="row">
+            <div class="col-lg-12">
+                <form id="linkForm" role="form" class="form-horizontal" method="post"
+                      action="/link/insert">
+
+                    <!-- <input type="text" id="version" value="{{.Session.SignedUser.Version}}" name="version" hidden> -->
+
+                    <div class="form-group">
+                        <label for="description" class="col-sm-2 control-label">
+                            <span style="color: red">*</span>
+                            {{tsl .Session.Lang "label.description"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="description" class="form-control" name="description">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="col-sm-2 control-label">
+                            <span style="color: red">*</span>
+                            {{tsl .Session.Lang "label.url"}}
+                        </label>
+
+                        <div class="col-sm-4">
+                            <input type="text" id="url" class="form-control" name="url">
+                        </div>
+                        <div class="col-sm-6 control-label" style="text-align: left"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-4">
+                            <button type="submit" class="btn btn-success btn-block">
+                                {{tsl .Session.Lang "label.submit"}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Core Scripts - Include with every page -->
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/jquery.validate.method.js"></script>
+<script src="/js/jquery.metisMenu.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/easykoo.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#link').toggleClass('active').children('ul').collapse('toggle');
+        $('#addLink').css({"background": "#DDDDDD"});
+
+        $("#linkForm").validate({
+            rules: {
+                description: {
+                    required: true,
+                    stringCheck: true
+                },
+                url: {
+                    required: true,
+                    url: true
+                }
+            },
+            messages: {
+                description: {
+                    required: '{{tsl .Session.Lang "message.error.required"}}',
+                    stringCheck: '{{tsl .Session.Lang "message.error.string.check"}}'
+                },
+                url: {
+                    required: '{{tsl .Session.Lang "message.error.required"}}',
+                    url: '{{tsl .Session.Lang "message.error.wrong.url.format"}}'
+                }
+            },
+            focusInvalid: true,
+            onkeyup: false,
+            errorClass: "error",
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div").next("div"));
+            },
+            highlight: function (element, errorClass) {
+                $(element).parent("div").parent("div").addClass("has-error").removeClass("has-success");
+            },
+            success: function (label) {
+                label.parent("div").parent("div").removeClass("has-error").addClass("has-success");
+            },
+            submitHandler: function (form) {
+                form.submit();
+                return false;
+            }
+        });
+    })
+</script>
+</body>
+</html>

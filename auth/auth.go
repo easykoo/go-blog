@@ -18,6 +18,7 @@ const (
 	Module_News
 	Module_Product
 	Module_Blog
+	Module_Link
 )
 
 func AuthRequest(req interface{}) martini.Handler {

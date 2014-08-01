@@ -1,7 +1,24 @@
 <footer>
     <div class="row">
         <div class="col-lg-12">
-            <p>Copyright &copy; <a href="http://www.easykoo.com">easykoo.com</a> 2014</p>
+        <h5>{{tsl .Session.Lang "label.friend.links"}}</h5>
+        </div>
+        <div class="col-lg-12">
+    	{{with .DbUtil.GetAllLinks}}
+    	{{range .}}
+        	<a href="{{.Url}}" target="_blank">{{.Description}}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    	{{end}}
+    	{{end}}
+    	</div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <p>Copyright &copy; <a href="http://www.wangcheng.me">wangcheng.me</a> 2014</p>
         </div>
     </div>
     <a id="goTop" href="#" class="label label-info hidden" title='{{tsl .Session.Lang "label.go.top"}}'><i class="fa fa-angle-double-up fa-4x"></i></a>

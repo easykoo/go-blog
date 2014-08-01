@@ -25,6 +25,20 @@
                 <a href="/feedback/all"><i class="fa fa-edit fa-fw"></i> {{tsl .Session.Lang "label.feedback"}}</a>
             </li>
             {{end}}
+            {{if privilege .Session.SignedUser 7}}
+            <li id="link">
+                <a href="javascript:"><i class="fa fa-link fa-fw"></i> {{tsl .Session.Lang "label.link"}}
+                    <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li id="allLinks">
+                        <a href="/link/all"> {{tsl .Session.Lang "label.all.links"}}</a>
+                    </li>
+                    <li id="addLink">
+                        <a href="/link/insert"> {{tsl .Session.Lang "label.add.link"}}</a>
+                    </li>
+                </ul>
+            </li>
+            {{end}}
             {{if privilege .Session.SignedUser 4}}
             <!--<li id="news">
                 <a href="javascript:"><i class="fa fa-file-text-o fa-fw"></i> {{tsl .Session.Lang "label.news"}}

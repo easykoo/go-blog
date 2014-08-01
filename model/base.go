@@ -41,3 +41,9 @@ func (self *DbUtil) GetHotBlog() (blog []Blog) {
 	}
 	return
 }
+
+func (self *DbUtil) GetAllLinks() (links []Link) {
+	err := orm.OrderBy("create_date desc").Find(&links, &Link{})
+	PanicIf(err)
+	return links
+}

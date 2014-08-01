@@ -8,7 +8,7 @@
     <meta name="description" content="{{.Session.Settings.Description}}">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>{{tsl .Session.Lang "label.all.feedback"}} - {{.Session.Settings.AppName}}</title>
+    <title>{{tsl .Session.Lang "label.all.links"}} - {{.Session.Settings.AppName}}</title>
 
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/font-awesome.min.css" rel="stylesheet">
@@ -20,7 +20,6 @@
     <script src="/js/respond.min.js"></script>
     <![endif]-->
 
-    <script src="/js/jquery-1.10.2.min.js"></script>
 </head>
 
 <body>
@@ -31,7 +30,7 @@
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">{{tsl .Session.Lang "label.all.feedback"}}</h1>
+                <h1 class="page-header">{{tsl .Session.Lang "label.all.links"}}</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -42,6 +41,8 @@
                     <div class="panel-heading">
                         <a class="btn btn-danger" id="delete"><i class="fa fa-trash-o fa-fw"></i>
                             {{tsl .Session.Lang "label.delete"}}</a>
+                        <a class="btn btn-success" href="/link/insert"><i class="fa fa-edit fa-fw"></i>
+                            {{tsl .Session.Lang "label.add"}}</a>
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
@@ -50,9 +51,8 @@
                                 <thead>
                                 <tr>
                                     <th><input type="checkbox" onchange='selectAll(this)' id="selectAll"/></th>
-                                    <th>{{tsl .Session.Lang "label.name"}}</th>
-                                    <th>{{tsl .Session.Lang "label.email"}}</th>
-                                    <th>{{tsl .Session.Lang "label.content"}}</th>
+                                    <th>{{tsl .Session.Lang "label.description"}}</th>
+                                    <th>{{tsl .Session.Lang "label.url"}}</th>
                                     <th>{{tsl .Session.Lang "label.create.date"}}</th>
                                     <th>{{tsl .Session.Lang "label.actions"}}</th>
                                 </tr>
@@ -72,6 +72,7 @@
     </div>
 </div>
 
+<script src="/js/jquery-1.10.2.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/jquery.metisMenu.js"></script>
 <script src="/js/bootbox.min.js"></script>
@@ -83,9 +84,9 @@
 
 <script type="text/javascript" charset="utf-8">
 
-var feedbackTable;
+var linkTable;
 
-function deleteFeedback(feedbackID) {
+function deleteLink(linkID) {
     bootbox.dialog({
         message: '{{tsl .Session.Lang "message.sure.delete.record"}}',
         title: '{{tsl .Session.Lang "label.delete.record"}}',
@@ -100,16 +101,15 @@ function deleteFeedback(feedbackID) {
                 className: "btn-danger",
                 callback: function (result) {
                     if (result) {
-                        $.ajax('/feedback/delete/' + feedbackID, {
+                        $.ajax('/link/delete/' + linkID, {
                             dataType: 'json',
                             type: "GET",
                             success: function (data) {
                                 if (!data.success) {
                                     bootbox.alert(data.message, null);
                                 }
-                                getFeedbackInfo();
-                                feedbackTable.fnClearTable(0);
-                                feedbackTable.fnDraw();
+                                linkTable.fnClearTable(0);
+                                linkTable.fnDraw();
                             }
                         });
                     }
@@ -119,52 +119,13 @@ function deleteFeedback(feedbackID) {
     });
 }
 
-var viewFeedback = function (id) {
-    var feedbackList = feedbackTable.fnGetData();
-    $.each(feedbackList, function (index, feedback) {
-        if (feedback.Id == id) {
-            bootbox.dialog({
-                message: feedback.Content,
-                title: feedback.Name + " - " + feedback.Email,
-                buttons: {
-                    success: {
-                        label: '{{tsl .Session.Lang "label.confirm"}}',
-                        className: "btn-danger",
-                        callback: function () {
-                            if (!feedback.Viewed) {
-                                $.ajax({
-                                    dataType: "json",
-                                    type: "GET",
-                                    url: '/feedback/view/' + id,
-                                    success: function (data) {
-                                        if (!data.success) {
-                                            bootbox.alert(data.message, null);
-                                        }
-                                        getFeedbackInfo();
-                                        feedbackTable.fnClearTable(0);
-                                        feedbackTable.fnDraw();
-                                    }
-                                });
-                            }
-                        }
-                    },
-                    default: {
-                        label: '{{tsl .Session.Lang "label.cancel"}}',
-                        className: "btn-default"
-                    }
-                }
-            });
-        }
-    });
-};
+var linkArray = [];
 
-var feedbackArray = [0];
-
-var selectFeedback = function (obj, feedbackId) {
+var selectLink = function (obj, linkId) {
     if ($(obj).prop("checked")) {
-        $.inArray(feedbackId, feedbackArray) < 0 ? feedbackArray.push(feedbackId) : null;
+        $.inArray(linkId, linkArray) < 0 ? linkArray.push(linkId) : null;
     } else {
-        feedbackArray.splice(jQuery.inArray(feedbackId, feedbackArray), 1);
+        linkArray.splice(jQuery.inArray(linkId, linkArray), 1);
     }
 }
 
@@ -188,8 +149,8 @@ var unSelectAll = function () {
     })
 }
 
-var getAllFeedback = function () {
-    feedbackTable = $('#dataTable').dataTable({
+var getAllLink = function () {
+    linkTable = $('#dataTable').dataTable({
         bPaginate: true,
         bProcessing: true,
         bServerSide: true,
@@ -200,9 +161,9 @@ var getAllFeedback = function () {
         iDisplayLength: 10,
         bLengthChange: true,
         sPaginationType: 'full_numbers',
-        sAjaxSource: '/feedback/all',
+        sAjaxSource: '/link/all',
         aaSorting: [
-            [4, 'desc']
+            [3, 'desc']
         ],
         fnServerData: function (sSource, aoData, fnCallback) {
             $.ajax({
@@ -216,27 +177,21 @@ var getAllFeedback = function () {
         "aoColumns": [
             { "mData": "Id",
                 "mRender": function (mData) {
-                    return '<input type="checkbox" name="selectFlag" onchange="selectFeedback(this,' + mData + ')"/>';
+                    return '<input type="checkbox" name="selectFlag" onchange="selectLink(this,' + mData + ')"/>';
                 },
                 "sWidth": 10
             },
-            { "mData": "Name",
+            { "mData": "Description",
                 "mRender": function (mData) {
-                    return mData.length <= 10 ? mData : (mData.substr(0, 10) + '... ')
+                    return mData.length <= 40 ? mData : (mData.substr(0, 40) + '... ')
                 },
                 "sWidth": 80
             },
-            { "mData": "Email",
-                "mRender": function (mData) {
-                    return mData.length <= 20 ? mData : (mData.substr(0, 20) + '... ')
-                },
-                "sWidth": 150
-            },
-            { "mData": "Content",
+            { "mData": "Url",
                 "mRender": function (mData) {
                     return mData.length <= 50 ? mData : (mData.substr(0, 50) + '... ')
                 },
-                "sWidth": 300
+                "sWidth": 150
             },
             { "mData": "CreateDate",
                 "mRender": function (mData) {
@@ -244,25 +199,24 @@ var getAllFeedback = function () {
                 },
                 "sWidth": 160
             },
-            { "mData": "Viewed", "sWidth": 70}
+            { "mData": "Id", "sWidth": 70}
         ],
         "fnRowCallback": function (nRow, aData, iDisplayIndex) {
 
             var html = '<div class="btn-group"><a class="btn btn-primary" href="javascript:"><i class="fa fa-gavel fa-fw"></i></a>' +
                     '<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="javascript:"><span class="fa fa-caret-down"></span></a>' +
                     '<ul class="dropdown-menu">' +
-                    '<li><a href="javascript:deleteFeedback(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
+                    '<li><a href="javascript:deleteLink(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
                     + '<strong> {{tsl .Session.Lang "label.delete"}}</strong>'
                     + '</a></li>';
-            html += '<li><a href="javascript:viewFeedback(' + aData.Id + ')"><i class="fa fa-eye fa-fw"></i>'
-                    + '<strong> {{tsl .Session.Lang "label.view"}}</strong>'
+            /*
+            html += '<li><a href="javascript:viewLink(' + aData.Id + ')"><i class="fa fa-eye fa-fw"></i>'
+                    + '<strong> {{tsl .Session.Lang "label.edit"}}</strong>'
                     + '</a></li>';
+                    */
             html += '</ul></div>';
-            $('td:eq(5)', nRow).html(html);
+            $('td:eq(4)', nRow).html(html);
 
-            if (aData.Viewed) {
-                $(nRow).css({"color": "#BBBBBB"})
-            }
             return nRow;
         },
         "oLanguage": {
@@ -270,17 +224,18 @@ var getAllFeedback = function () {
         },
         "aoColumnDefs": [
             { "bSortable": false, "aTargets": [ 0 ] },
-            { "bSortable": false, "aTargets": [ 5 ] }
+            { "bSortable": false, "aTargets": [ 4 ] }
         ]
     });
 }
 
 $(document).ready(function () {
-    $('#feedback').css({"background": "#DDDDDD"});
-    getAllFeedback();
+    $('#link').toggleClass('active').children('ul').collapse('toggle');
+    $('#allLinks').css({"background": "#DDDDDD"});
+    getAllLink();
 
     $('#delete').click(function () {
-        if (feedbackArray.length <= 1) {
+        if (linkArray.length <= 1) {
             bootbox.alert('{{tsl .Session.Lang "message.error.please.select"}}', null);
             return;
         }
@@ -301,17 +256,17 @@ $(document).ready(function () {
                             $.ajax({
                                 dataType: "json",
                                 type: "POST",
-                                url: '/feedback/delete',
-                                data: {feedbackArray: $.toJSON(feedbackArray)},
+                                url: '/link/delete',
+                                data: {linkArray: $.toJSON(linkArray)},
                                 traditional: true,
                                 success: function (data) {
                                     if (!data.success) {
                                         bootbox.alert(data.message, null);
                                     }
                                     unSelectAll();
-                                    feedbackArray = [0];
-                                    feedbackTable.fnClearTable(0);
-                                    feedbackTable.fnDraw();
+                                    linkArray = [0];
+                                    linkTable.fnClearTable(0);
+                                    linkTable.fnDraw();
                                 }
                             });
                         }

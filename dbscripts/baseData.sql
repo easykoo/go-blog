@@ -30,6 +30,8 @@ INSERT INTO module (id, description, create_user, create_date, update_user, upda
 VALUES (5, 'Product', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO module (id, description, create_user, create_date, update_user, update_date)
 VALUES (6, 'Blog', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO module (id, description, create_user, create_date, update_user, update_date)
+VALUES (7, 'Link', 'SYSTEM', now(), 'SYSTEM', now());
 
 DELETE FROM privilege;
 INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, update_user, update_date)
@@ -60,6 +62,12 @@ INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, up
 VALUES (6, 2, 1, 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, update_user, update_date)
 VALUES (6, 3, 1, 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, update_user, update_date)
+VALUES (7, 1, 1, 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, update_user, update_date)
+VALUES (7, 2, 1, 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO privilege (module_id, role_id, dept_id, create_user, create_date, update_user, update_date)
+VALUES (7, 3, 1, 'SYSTEM', now(), 'SYSTEM', now());
 
 DELETE FROM category;
 INSERT INTO category (id, description, parent_id, create_user, create_date, update_user, update_date)

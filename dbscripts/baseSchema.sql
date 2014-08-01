@@ -182,3 +182,16 @@ CREATE TABLE session_info (
   update_date DATETIME DEFAULT NULL,
   PRIMARY KEY (id)
 );
+
+DROP TABLE IF EXISTS link;
+CREATE TABLE link (
+  id          INT(11)     NOT NULL AUTO_INCREMENT,
+  description VARCHAR(40) NOT NULL,
+  url         VARCHAR(80) NOT NULL,
+  create_user VARCHAR(20) DEFAULT NULL,
+  create_date DATETIME DEFAULT NULL,
+  update_user VARCHAR(20) DEFAULT NULL,
+  update_date DATETIME DEFAULT NULL,
+  version     INT(11) DEFAULT 1,
+  PRIMARY KEY (id)
+);

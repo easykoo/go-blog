@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/easykoo/binding"
 	"github.com/easykoo/sessions"
 	"github.com/go-martini/martini"
-	"github.com/easykoo/binding"
 	"github.com/martini-contrib/render"
 	"github.com/russross/blackfriday"
 
@@ -37,7 +37,7 @@ func newMartini() *martini.ClassicMartini {
 	m.MapTo(r, (*martini.Routes)(nil))
 	m.Action(r.Handle)
 
-	m.Use(sessions.Sessions("my_session", middleware.NewDbStore(60*30)))
+	m.Use(sessions.Sessions("my_session", middleware.NewDbStore(7*24*60*60)))
 
 	m.Use(render.Renderer(render.Options{
 		Directory:  "templates",
@@ -129,6 +129,14 @@ func main() {
 		r.Any("/delete", AuthRequest(Module_Feedback), handler.DeleteFeedbackArray)
 		r.Any("/delete/:id", AuthRequest(Module_Feedback), handler.DeleteFeedback)
 		r.Any("/view/:id", AuthRequest(Module_Feedback), handler.ViewFeedback)
+	})
+
+	m.Group("/link", func(r martini.Router) {
+		r.Any("/all", AuthRequest(Module_Link), handler.AllLink)
+		r.Any("/insert", AuthRequest(Module_Link), binding.Form(model.Link{}), handler.InsertLink)
+		r.Any("/delete", AuthRequest(Module_Link), handler.DeleteLinkArray)
+		r.Any("/delete/:id", AuthRequest(Module_Link), handler.DeleteLink)
+		r.Any("/edit/:id", AuthRequest(Module_Link), handler.EditLink)
 	})
 
 	m.Group("/blog", func(r martini.Router) {
