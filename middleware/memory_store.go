@@ -41,7 +41,7 @@ type SessionInfo struct {
 // Get returns a session for the given name after adding it to the registry.
 //
 func (s *MemoryStore) Get(r *http.Request, name string) (*sessions.Session, error) {
-	Log.Infol("MemoryStore Get()")
+	Log.Info("MemoryStore Get()")
 	return sessions.GetRegistry(r).Get(s, name)
 }
 
@@ -54,11 +54,11 @@ func (s *MemoryStore) New(r *http.Request, name string) (*sessions.Session, erro
 	session.IsNew = true
 	var err error
 	if c, errCookie := r.Cookie(name); errCookie == nil {
-		Log.Infol("MemoryStore reading cookie")
+		Log.Info("MemoryStore reading cookie")
 		err = securecookie.DecodeMulti(name, c.Value, &session.ID, s.Codecs...)
 		PanicIf(err)
 		if err == nil {
-			Log.Infol("MemoryStore read cookie success")
+			Log.Info("MemoryStore read cookie success")
 			err = s.load(session)
 			if err == nil {
 				session.IsNew = false
@@ -71,7 +71,7 @@ func (s *MemoryStore) New(r *http.Request, name string) (*sessions.Session, erro
 // Save adds a single session to the response.
 func (s *MemoryStore) Save(r *http.Request, w http.ResponseWriter,
 	session *sessions.Session) error {
-	Log.Infol("MemoryStore Save()", session.ID)
+	Log.Info("MemoryStore Save()", session.ID)
 	if session.ID == "" {
 		session.ID = strings.TrimRight(
 			base32.StdEncoding.EncodeToString(
@@ -91,21 +91,21 @@ func (s *MemoryStore) Save(r *http.Request, w http.ResponseWriter,
 
 // save writes encoded session.Values to a file.
 func (s *MemoryStore) save(session *sessions.Session) error {
-	Log.Infol("MemoryStore save()")
+	Log.Info("MemoryStore save()")
 	s.Container[session.ID] = &SessionInfo{S: session, T: time.Now()}
 	return nil
 }
 
 // load reads a file and decodes its content into session.Values.
 func (s *MemoryStore) load(session *sessions.Session) error {
-	Log.Infol("MemoryStore load()")
-	Log.Infol("MemoryStore load session: ", session.ID)
+	Log.Info("MemoryStore load()")
+	Log.Info("MemoryStore load session: ", session.ID)
 	if _, ok := s.Container[session.ID]; ok {
-		Log.Infol("MemoryStore load session OK ")
+		Log.Info("MemoryStore load session OK ")
 		session = s.Container[session.ID].S
-		Log.Infol("MemoryStore load SignedUser: ", session.Values["SignedUser"])
+		Log.Info("MemoryStore load SignedUser: ", session.Values["SignedUser"])
 	} else {
-		Log.Infol("MemoryStore load session failed ")
+		Log.Info("MemoryStore load session failed ")
 	}
 	return nil
 }
@@ -126,9 +126,9 @@ func (s *MemoryStore) CheckMemorySessions() {
 func (s *MemoryStore) removeMemorySessions() {
 	for sId, sessionInfo := range s.Container {
 		if (time.Now().Unix() - sessionInfo.T.Unix()) >= int64(s.Options.MaxAge) {
-			Log.Infol(time.Now().Unix() - sessionInfo.T.Unix())
+			Log.Info(time.Now().Unix() - sessionInfo.T.Unix())
 			delete(s.Container, sId)
-			Log.Infol("Removed: ", sId)
+			Log.Info("Removed: ", sId)
 		}
 	}
 }

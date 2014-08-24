@@ -30,18 +30,18 @@ func GetSettings() *Settings {
 
 func (self *Settings) Insert() error {
 	_, err := orm.InsertOne(self)
-	Log.Infol("Settings ", self.Id, " inserted")
+	Log.Info("Settings ", self.Id, " inserted")
 	return err
 }
 
 func (self *Settings) Update() error {
 	_, err := orm.Id(self.Id).Update(self)
-	Log.Infol("Settings ", self.Id, " updated!")
+	Log.Info("Settings ", self.Id, " updated!")
 	return err
 }
 
 func (self *Settings) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Infol("Settings ", self.Id, " deleted")
+	Log.Info("Settings ", self.Id, " deleted")
 	return err
 }

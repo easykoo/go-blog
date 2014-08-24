@@ -40,19 +40,19 @@ func (self *Visit) GetVisit() (visit Visit) {
 
 func (self *Visit) Insert() error {
 	_, err := orm.InsertOne(self)
-	Log.Infol("Visit ", self.SessionId, " inserted")
+	Log.Info("Visit ", self.SessionId, " inserted")
 	return err
 }
 
 func (self *Visit) Update() error {
 	_, err := orm.Id(self.SessionId).Update(self)
-	Log.Infol("Visit ", self.SessionId, " updated")
+	Log.Info("Visit ", self.SessionId, " updated")
 	return err
 }
 
 func (self *Visit) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Infol("Visit ", self.SessionId, " deleted")
+	Log.Info("Visit ", self.SessionId, " deleted")
 	return err
 }
 

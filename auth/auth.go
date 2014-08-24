@@ -23,22 +23,22 @@ const (
 
 func AuthRequest(req interface{}) martini.Handler {
 	return func(ctx *middleware.Context) {
-		Log.Infol("Checking privilege: ", ctx.R.RequestURI)
+		Log.Info("Checking privilege: ", ctx.R.RequestURI)
 		switch req {
 		case SignInRequired:
-			Log.Infol("Checking style: ", "SignInRequired")
+			Log.Info("Checking style: ", "SignInRequired")
 			if user := ctx.S.Get("SignedUser"); user != nil {
-				Log.Infol("Pass!")
+				Log.Info("Pass!")
 				return
 			}
 			ctx.Redirect("/user/login")
 			return
 		default:
-			Log.Infol("Checking style: ", "Module ", req.(int))
+			Log.Info("Checking style: ", "Module ", req.(int))
 			if user := ctx.S.Get("SignedUser"); user != nil {
 				if reflect.TypeOf(req).Kind() == reflect.Int {
 					if CheckPermission(user, req.(int)) {
-						Log.Infol("Pass!")
+						Log.Info("Pass!")
 						return
 					}
 					ctx.HTML(403, "error/403", ctx)

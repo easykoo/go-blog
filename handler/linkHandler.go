@@ -32,14 +32,12 @@ func AllLink(ctx *middleware.Context) {
 }
 
 func InsertLink(ctx *middleware.Context, link model.Link) {
-	Log.Debug("ddddddddddddd")
 	switch ctx.R.Method {
 	case "POST":
 		err := link.Insert()
 		PanicIf(err)
 		ctx.Set("success", true)
 		ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.send.success"))
-		// ctx.JSON(200, ctx.Response)
 		ctx.Redirect("/link/all")
 	default:
 		ctx.HTML(200, "link/edit", ctx)

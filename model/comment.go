@@ -36,19 +36,19 @@ func (self *Comment) Insert() error {
 	seq, err := self.GenerateSeq()
 	self.Seq = seq
 	_, err = orm.InsertOne(self)
-	Log.Infol("Comment ", self.Blog.Id, " ", self.Seq, " inserted")
+	Log.Info("Comment ", self.Blog.Id, " ", self.Seq, " inserted")
 	return err
 }
 
 func (self *Comment) Update() error {
 	_, err := orm.Update(self)
-	Log.Infol("Comment ", self.Blog.Id, " ", self.Seq, " updated")
+	Log.Info("Comment ", self.Blog.Id, " ", self.Seq, " updated")
 	return err
 }
 
 func (self *Comment) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Infol("Comment ", self.Blog.Id, " ", self.Seq, " deleted")
+	Log.Info("Comment ", self.Blog.Id, " ", self.Seq, " deleted")
 	return err
 }
 

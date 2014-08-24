@@ -20,13 +20,13 @@ type Feedback struct {
 
 func (self *Feedback) Insert() error {
 	_, err := orm.InsertOne(self)
-	Log.Infol("Feedback ", self.Id, " inserted")
+	Log.Info("Feedback ", self.Id, " inserted")
 	return err
 }
 
 func (self *Feedback) Delete() error {
 	_, err := orm.Delete(self)
-	Log.Infol("Feedback ", self.Id, " deleted")
+	Log.Info("Feedback ", self.Id, " deleted")
 	return err
 }
 
@@ -47,7 +47,7 @@ func (self *Feedback) DeleteFeedbackArray(array []int) error {
 	}
 	sql += ")"
 	_, err = orm.Exec(sql)
-	Log.Infol("Feedback array: ", array, " deleted")
+	Log.Info("Feedback array: ", array, " deleted")
 	return err
 }
 

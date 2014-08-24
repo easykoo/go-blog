@@ -187,12 +187,12 @@ func (s *FileStore) removeFileSessions(first bool) {
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), "session_") {
 			if first {
-				Log.Infol("Removed: ", f.Name())
+				Log.Info("Removed: ", f.Name())
 			} else {
 				if time.Now().Unix()-f.ModTime().Unix() >= 60*30 {
-					Log.Infol(time.Now().Unix() - f.ModTime().Unix())
+					Log.Info(time.Now().Unix() - f.ModTime().Unix())
 					os.Remove(f.Name())
-					Log.Infol("Removed: ", f.Name())
+					Log.Info("Removed: ", f.Name())
 				}
 			}
 		}

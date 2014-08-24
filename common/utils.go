@@ -14,17 +14,17 @@ import (
 	"time"
 )
 
-var Log *SimpleLogger
+var Log *Logger
 
 func SetLog() {
-	var w io.Writer
+	var out io.Writer
 	if Cfg.MustBool("", "log_file", false) {
 		f, _ := os.OpenFile(Cfg.MustValue("", "log_path", "./log.txt"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
-		w = io.MultiWriter(f)
+		out = io.MultiWriter(f)
 	} else {
-		w = os.Stdout
+		out = os.Stdout
 	}
-	Log = NewSimpleLogger(w)
+	Log = New(out, "[go-blog]", Lshortfile|Ldate|Lmicroseconds)
 }
 
 func PanicIf(err error) {

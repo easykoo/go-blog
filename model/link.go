@@ -21,7 +21,7 @@ func (self *Link) Insert() error {
 	session := orm.NewSession()
 	defer session.Close()
 	_, err := session.InsertOne(self)
-	Log.Infol("Link ", self.Id, " inserted")
+	Log.Info("Link ", self.Id, " inserted")
 	return err
 }
 
@@ -29,7 +29,7 @@ func (self *Link) Update() error {
 	session := orm.NewSession()
 	defer session.Close()
 	_, err := session.Id(self.Id).Update(self)
-	Log.Infol("Link ", self.Id, " updated!")
+	Log.Info("Link ", self.Id, " updated!")
 	return err
 }
 
@@ -37,7 +37,7 @@ func (self *Link) Delete() error {
 	session := orm.NewSession()
 	defer session.Close()
 	_, err := session.Delete(self)
-	Log.Infol("Link ", self.Id, " deleted")
+	Log.Info("Link ", self.Id, " deleted")
 	return err
 }
 
@@ -54,7 +54,7 @@ func (self *Link) GetLink() error {
 
 func (self *Link) DeleteLinkArray(array []int) error {
 	_, err := orm.In("id", array).Delete(&Link{})
-	Log.Infol("Link Array: ", array, " deleted")
+	Log.Info("Link Array: ", array, " deleted")
 	return err
 }
 

@@ -64,7 +64,7 @@ type Logger struct {
 	flag   int        // properties
 	out    io.Writer  // destination for output
 	buf    []byte     // for accumulating text to write
-	Level  int
+	level  int
 }
 
 // New creates a new Logger.   The out variable sets the
@@ -183,7 +183,7 @@ func (l *Logger) Output(calldepth int, s string) error {
 }
 
 func (l *Logger) LevelOutput(level int, calldepth int, s string) error {
-	if level < l.Level {
+	if level < l.level {
 		return nil
 	}
 	now := time.Now() // get this early.
@@ -214,7 +214,7 @@ func (l *Logger) LevelOutput(level int, calldepth int, s string) error {
 }
 
 func (l *Logger) Debugf(format string, v ...interface{}) (err error) {
-	if LDebug < l.Level {
+	if LDebug < l.level {
 		return
 	}
 	l.LevelOutput(LDebug, 2, fmt.Sprintf(format, v...))
@@ -222,7 +222,7 @@ func (l *Logger) Debugf(format string, v ...interface{}) (err error) {
 }
 
 func (l *Logger) Debug(v ...interface{}) (err error) {
-	if LDebug < l.Level {
+	if LDebug < l.level {
 		return
 	}
 	l.LevelOutput(LDebug, 2, fmt.Sprint(v...))
@@ -230,7 +230,7 @@ func (l *Logger) Debug(v ...interface{}) (err error) {
 }
 
 func (l *Logger) Infof(format string, v ...interface{}) (err error) {
-	if LInfo < l.Level {
+	if LInfo < l.level {
 		return
 	}
 	l.LevelOutput(LInfo, 2, fmt.Sprintf(format, v...))
@@ -238,7 +238,7 @@ func (l *Logger) Infof(format string, v ...interface{}) (err error) {
 }
 
 func (l *Logger) Info(v ...interface{}) (err error) {
-	if LInfo < l.Level {
+	if LInfo < l.level {
 		return
 	}
 	l.LevelOutput(LInfo, 2, fmt.Sprint(v...))
@@ -246,7 +246,7 @@ func (l *Logger) Info(v ...interface{}) (err error) {
 }
 
 func (l *Logger) Warningf(format string, v ...interface{}) (err error) {
-	if LWarn < l.Level {
+	if LWarn < l.level {
 		return
 	}
 	l.LevelOutput(LWarn, 2, fmt.Sprintf(format, v...))
@@ -254,7 +254,7 @@ func (l *Logger) Warningf(format string, v ...interface{}) (err error) {
 }
 
 func (l *Logger) Warning(v ...interface{}) (err error) {
-	if LWarn < l.Level {
+	if LWarn < l.level {
 		return
 	}
 	l.LevelOutput(LWarn, 2, fmt.Sprint(v...))
@@ -262,7 +262,7 @@ func (l *Logger) Warning(v ...interface{}) (err error) {
 }
 
 func (l *Logger) Errf(format string, v ...interface{}) (err error) {
-	if LError < l.Level {
+	if LError < l.level {
 		return
 	}
 	l.LevelOutput(LError, 2, fmt.Sprintf(format, v...))
@@ -270,7 +270,7 @@ func (l *Logger) Errf(format string, v ...interface{}) (err error) {
 }
 
 func (l *Logger) Err(v ...interface{}) (err error) {
-	if LError < l.Level {
+	if LError < l.level {
 		return
 	}
 	l.LevelOutput(LError, 2, fmt.Sprint(v...))
@@ -278,7 +278,7 @@ func (l *Logger) Err(v ...interface{}) (err error) {
 }
 
 func (l *Logger) Panicf(format string, v ...interface{}) {
-	if LPanic < l.Level {
+	if LPanic < l.level {
 		return
 	}
 	s := fmt.Sprintf(format, v...)
@@ -287,7 +287,7 @@ func (l *Logger) Panicf(format string, v ...interface{}) {
 }
 
 func (l *Logger) Panic(v ...interface{}) {
-	if LPanic < l.Level {
+	if LPanic < l.level {
 		return
 	}
 	s := fmt.Sprint(v...)
@@ -296,7 +296,7 @@ func (l *Logger) Panic(v ...interface{}) {
 }
 
 func (l *Logger) Fatalf(format string, v ...interface{}) {
-	if LFatal < l.Level {
+	if LFatal < l.level {
 		return
 	}
 	l.LevelOutput(LFatal, 2, fmt.Sprintf(format, v...))
@@ -304,7 +304,7 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 }
 
 func (l *Logger) Fatal(v ...interface{}) {
-	if LFatal < l.Level {
+	if LFatal < l.level {
 		return
 	}
 	l.LevelOutput(LFatal, 2, fmt.Sprint(v...))
