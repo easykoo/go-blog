@@ -42,9 +42,46 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
+		<div class="row">
+		<div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {{tsl .Session.Lang "label.statistics"}}
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{tsl .Session.Lang "label.total.count"}}</th>
+                                    <th>{{tsl .Session.Lang "label.month.count"}}</th>
+                                    <th>{{tsl .Session.Lang "label.day.count"}}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    {{with .Response.Visit.GetStatistics}}
+                                    <td>#</td>
+                                    <td>{{.TotalCount}}</td>
+                                    <td>{{.MonthCount}}</td>
+                                    <td>{{.DayCount}}</td>
+                                    {{end}}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+		</div>
         <!-- /.row -->
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         {{tsl .Session.Lang "label.recent.visit"}}
@@ -90,43 +127,6 @@
                 </div>
                 <!-- /.panel -->
             </div>
-            <!-- /.col-lg-6 -->
-            <div class="col-lg-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        {{tsl .Session.Lang "label.statistics"}}
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{tsl .Session.Lang "label.total.count"}}</th>
-                                    <th>{{tsl .Session.Lang "label.month.count"}}</th>
-                                    <th>{{tsl .Session.Lang "label.day.count"}}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    {{with .Response.Visit.GetStatistics}}
-                                    <td>#</td>
-                                    <td>{{.TotalCount}}</td>
-                                    <td>{{.MonthCount}}</td>
-                                    <td>{{.DayCount}}</td>
-                                    {{end}}
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- /.table-responsive -->
-                    </div>
-                    <!-- /.panel-body -->
-                </div>
-                <!-- /.panel -->
-            </div>
-            <!-- /.col-lg-6 -->
         </div>
         <!-- /.row -->
     </div>
