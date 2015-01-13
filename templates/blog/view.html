@@ -43,7 +43,7 @@
             </a>
             {{end}}
             {{end}}
-            <hr>
+
             <p class="gray" style="line-height: 25px">
                 {{.Response.Blog.Author.FullName}}
 
@@ -67,7 +67,6 @@
                 {{end}}
                 {{end}}
             </p>
-            <hr>
             {{.Response.Blog.AllContent | unescaped}}
             <hr>
             <!-- the comment box -->
@@ -125,11 +124,9 @@
                 </form>
             </div>
 			{{end}}
-            <hr>
             {{with .Response.Blog.GetComments}}
             {{range $key,$val:=.}}
             {{if equal $key 0}}{{else}}
-            <hr>
             {{end}}
             <div class="comment-line">
                 <h4 id='{{.Seq}}'>
