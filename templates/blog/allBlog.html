@@ -121,6 +121,72 @@ function deleteBlog(blogID) {
     });
 }
 
+function forbidComment(blogID) {
+    bootbox.dialog({
+        message: '{{tsl .Session.Lang "message.sure.forbid.record"}}',
+        title: '{{tsl .Session.Lang "label.forbid"}}',
+        buttons: {
+            main: {
+                label: '{{tsl .Session.Lang "label.cancel"}}',
+                className: "btn-default",
+                callback: null
+            },
+            danger: {
+                label: '{{tsl .Session.Lang "label.yes"}}',
+                className: "btn-danger",
+                callback: function (result) {
+                    if (result) {
+                        $.ajax('/blog/forbid/' + blogID, {
+                            dataType: 'json',
+                            type: "GET",
+                            success: function (data) {
+                                if (!data.success) {
+                                    bootbox.alert(data.message, null);
+                                }
+                                blogTable.fnClearTable(0);
+                                blogTable.fnDraw();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+}
+
+function permitComment(blogID) {
+    bootbox.dialog({
+        message: '{{tsl .Session.Lang "message.sure.permit.record"}}',
+        title: '{{tsl .Session.Lang "label.permit"}}',
+        buttons: {
+            main: {
+                label: '{{tsl .Session.Lang "label.cancel"}}',
+                className: "btn-default",
+                callback: null
+            },
+            danger: {
+                label: '{{tsl .Session.Lang "label.yes"}}',
+                className: "btn-danger",
+                callback: function (result) {
+                    if (result) {
+                        $.ajax('/blog/permit/' + blogID, {
+                            dataType: 'json',
+                            type: "GET",
+                            success: function (data) {
+                                if (!data.success) {
+                                    bootbox.alert(data.message, null);
+                                }
+                                blogTable.fnClearTable(0);
+                                blogTable.fnDraw();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+}
+
 var viewBlog = function (id) {
     window.location.href = "/blog/view/" + id;
 };
@@ -205,7 +271,7 @@ var getAllBlog = function () {
             { "mData": "State",
                 "mRender": function (mData) {
                     if (mData == 'PUBLISHED') {
-                        return '{{tsl .Session.Lang "label.published"}}'
+                       	return '{{tsl .Session.Lang "label.published"}}'
                     }
                     return '{{tsl .Session.Lang "label.draft"}}'
                 },
@@ -233,6 +299,17 @@ var getAllBlog = function () {
                     '<li><a href="javascript:deleteBlog(' + aData.Id + ')"><i class="fa fa-trash-o fa-fw"></i>'
                     + '<strong> {{tsl .Session.Lang "label.delete"}}</strong>'
                     + '</a></li>';
+			if (aData.State == "PUBLISHED") {
+				if (aData.ForbidComment) {
+	            	html += '<li><a href="javascript:permitComment(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
+	               	+ '<strong> {{tsl .Session.Lang "label.permit"}}</strong>'
+					+ '</a></li>';
+				} else {
+	            	html += '<li><a href="javascript:forbidComment(' + aData.Id + ')"><i class="fa fa-ban fa-fw"></i>'
+	                	+ '<strong> {{tsl .Session.Lang "label.forbid"}}</strong>'
+	                  	+ '</a></li>';
+				}
+			}
             html += '<li><a href="javascript:editBlog(' + aData.Id + ')"><i class="fa fa-edit fa-fw"></i>'
                     + '<strong> {{tsl .Session.Lang "label.edit"}}</strong>'
                     + '</a></li>';
@@ -244,7 +321,9 @@ var getAllBlog = function () {
 
             if (aData.State != 'PUBLISHED') {
                 $(nRow).css({"color": "#BBBBBB"})
-            }
+            } else if (aData.ForbidComment) {
+                $(nRow).css({"color": "#BB0000"})
+			}
             return nRow;
         },
         "oLanguage": {

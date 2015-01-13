@@ -69,9 +69,9 @@
             </p>
             <hr>
             {{.Response.Blog.AllContent | unescaped}}
-
             <hr>
             <!-- the comment box -->
+			{{if not .Response.Blog.ForbidComment}}
             <div>
                 <div class="form-group">
                     <div class="row form-group">
@@ -124,7 +124,7 @@
                     </div>
                 </form>
             </div>
-
+			{{end}}
             <hr>
             {{with .Response.Blog.GetComments}}
             {{range $key,$val:=.}}

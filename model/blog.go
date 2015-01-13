@@ -9,22 +9,23 @@ import (
 )
 
 type Blog struct {
-	Id          int       `form:"blogId" xorm:"int(11) pk not null autoincr"`
-	Title       string    `form:"title" xorm:"varchar(45) not null"`
-	Content     string    `form:"content" xorm:"blob not null"`
-	State       string    `xorm:"varchar(10) default null"`
-	Priority    int       `xorm:"int(1) default 5"`
-	Author      User      `json:"author_id" xorm:"author_id"`
-	Visit       int       `xorm:"int(9)"`
-	Tags        []Tag     `form:"tags" json:"tags" xorm:"-"`
-	Comments    []Comment `json:"comments" xorm:"-"`
-	PublishDate time.Time `xorm:"datetime default null"`
-	CreateUser  string    `xorm:"varchar(20) default null"`
-	CreateDate  time.Time `xorm:"datetime created"`
-	UpdateUser  string    `xorm:"varchar(20) default null"`
-	UpdateDate  time.Time `xorm:"datetime updated"`
-	Version     int       `form:"version" xorm:"int(11) version"`
-	Page        `xorm:"-"`
+	Id            int       `form:"blogId" xorm:"int(11) pk not null autoincr"`
+	Title         string    `form:"title" xorm:"varchar(45) not null"`
+	Content       string    `form:"content" xorm:"blob not null"`
+	State         string    `xorm:"varchar(10) default null"`
+	Priority      int       `xorm:"int(1) default 5"`
+	Author        User      `json:"author_id" xorm:"author_id"`
+	Visit         int       `xorm:"int(9)"`
+	Tags          []Tag     `form:"tags" json:"tags" xorm:"-"`
+	Comments      []Comment `json:"comments" xorm:"-"`
+	PublishDate   time.Time `xorm:"datetime default null"`
+	ForbidComment bool      `xorm:"tinyint(1) default 0"`
+	CreateUser    string    `xorm:"varchar(20) default null"`
+	CreateDate    time.Time `xorm:"datetime created"`
+	UpdateUser    string    `xorm:"varchar(20) default null"`
+	UpdateDate    time.Time `xorm:"datetime updated"`
+	Version       int       `form:"version" xorm:"int(11) version"`
+	Page          `xorm:"-"`
 }
 
 type Tag struct {
@@ -35,6 +36,10 @@ type Tag struct {
 type TagInfo struct {
 	Name  string
 	Count int
+}
+
+func (self *Blog) Exist() (bool, error) {
+	return orm.Get(self)
 }
 
 func (self *Blog) Insert() error {
@@ -107,6 +112,15 @@ func (self *Blog) Delete() error {
 	_, err = session.Exec("delete from comment where blog_id = ?", self.Id)
 	_, err = session.Exec("delete from tag where blog_id = ?", self.Id)
 	Log.Info("Blog ", self.Id, " deleted")
+	return err
+}
+
+func (self *Blog) Forbid(forbid bool) error {
+	session := orm.NewSession()
+	defer session.Close()
+	err := self.GetBlog()
+	_, err = orm.Id(self.Id).UseBool("forbid_comment").Update(&Blog{ForbidComment: forbid, Version: self.Version})
+	Log.Info("Blog ", self.Id, " updated!")
 	return err
 }
 

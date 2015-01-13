@@ -149,6 +149,8 @@ func main() {
 		r.Any("/edit/:id", AuthRequest(Module_Blog), handler.EditBlog)
 		r.Any("/delete", AuthRequest(Module_Blog), handler.DeleteBlogArray)
 		r.Any("/delete/:id", AuthRequest(Module_Blog), handler.DeleteBlog)
+		r.Any("/forbid/:id", AuthRequest(Module_Blog), handler.ForbidBlog)
+		r.Any("/permit/:id", AuthRequest(Module_Blog), handler.PermitBlog)
 	})
 
 	m.Group("/blog/comment", func(r martini.Router) {

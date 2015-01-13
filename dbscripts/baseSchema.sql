@@ -93,20 +93,21 @@ CREATE TABLE feedback (
 
 DROP TABLE IF EXISTS blog;
 CREATE TABLE blog (
-  id           INT(11)     NOT NULL AUTO_INCREMENT,
-  category_id  INT(9)      NOT NULL DEFAULT 1,
-  title        VARCHAR(60) NOT NULL,
-  content      BLOB        NOT NULL,
-  state        VARCHAR(10) NOT NULL,
-  priority     INT(1)      NULL DEFAULT 5,
-  author_id    INT(11) DEFAULT NULL,
-  visit        INT(9) DEFAULT 0,
-  publish_date DATETIME DEFAULT NULL,
-  create_user  VARCHAR(20) DEFAULT NULL,
-  create_date  DATETIME DEFAULT NULL,
-  update_user  VARCHAR(20) DEFAULT NULL,
-  update_date  DATETIME DEFAULT NULL,
-  version      INT(11) DEFAULT 1,
+  id           		INT(11)     NOT NULL AUTO_INCREMENT,
+  category_id  		INT(9)      NOT NULL DEFAULT 1,
+  title        		VARCHAR(60) NOT NULL,
+  content      		BLOB        NOT NULL,
+  state        		VARCHAR(10) NOT NULL,
+  priority     		INT(1)      NULL DEFAULT 5,
+  author_id    		INT(11) DEFAULT NULL,
+  visit        		INT(9) DEFAULT 0,
+  publish_date 		DATETIME DEFAULT NULL,
+  forbid_comment	TINYINT(1) DEFAULT 0,
+  create_user  		VARCHAR(20) DEFAULT NULL,
+  create_date  		DATETIME DEFAULT NULL,
+  update_user  		VARCHAR(20) DEFAULT NULL,
+  update_date  		DATETIME DEFAULT NULL,
+  version      		INT(11) DEFAULT 1,
   PRIMARY KEY (id)
 );
 

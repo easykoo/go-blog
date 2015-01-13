@@ -169,6 +169,26 @@ func DeleteBlog(ctx *middleware.Context, params martini.Params) {
 	ctx.JSON(200, ctx.Response)
 }
 
+func ForbidBlog(ctx *middleware.Context, params martini.Params) {
+	id := params["id"]
+	blog := new(model.Blog)
+	blog.Id = ParseInt(id)
+	err := blog.Forbid(true)
+	PanicIf(err)
+	ctx.Set("success", true)
+	ctx.JSON(200, ctx.Response)
+}
+
+func PermitBlog(ctx *middleware.Context, params martini.Params) {
+	id := params["id"]
+	blog := new(model.Blog)
+	blog.Id = ParseInt(id)
+	err := blog.Forbid(false)
+	PanicIf(err)
+	ctx.Set("success", true)
+	ctx.JSON(200, ctx.Response)
+}
+
 func DeleteBlogArray(ctx *middleware.Context) {
 	blogArray := ctx.R.FormValue("blogArray")
 	blog := new(model.Blog)
@@ -201,17 +221,26 @@ func Comment(ctx *middleware.Context) {
 	email := ctx.R.PostFormValue("email")
 	www := ctx.R.PostFormValue("www")
 	content := ctx.R.PostFormValue("content")
-	comment := model.Comment{Blog: model.Blog{Id: id}, Name: name, Email: email, Www: www, Content: content}
-
-	if comment.Content == "" {
-		ctx.Set("success", false)
-		ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.error.submit.failed"))
-	} else {
-		comment.Ip = GetRemoteIp(ctx.R)
-		err := comment.Insert()
+	blog := model.Blog{Id: id}
+	if exist, err := blog.Exist(); exist {
 		PanicIf(err)
-		ctx.Set("success", true)
-		ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.submit.success"))
+		comment := model.Comment{Blog: model.Blog{Id: id}, Name: name, Email: email, Www: www, Content: content}
+		if comment.Content == "" {
+			ctx.Set("success", false)
+			ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.error.submit.failed"))
+		} else if blog.ForbidComment {
+			ctx.Set("success", false)
+			ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.error.forbid.comment"))
+		} else {
+			comment.Ip = GetRemoteIp(ctx.R)
+			err := comment.Insert()
+			PanicIf(err)
+			ctx.Set("success", true)
+			ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.submit.success"))
+		}
+	} else {
+		ctx.Set("success", false)
+		ctx.Set("message", Translate(ctx.S.Get("Lang").(string), "message.error.blog.not.exists"))
 	}
 	ctx.JSON(200, ctx.Response)
 }
