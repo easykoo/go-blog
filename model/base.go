@@ -13,10 +13,11 @@ var orm *xorm.Engine
 func SetEngine() *xorm.Engine {
 	Log.Info("db initializing...")
 	var err error
+	server := Cfg.MustValue("db", "server", "127.0.0.1")
 	username := Cfg.MustValue("db", "username", "root")
 	password := Cfg.MustValue("db", "password", "pass")
-	dbName := Cfg.MustValue("db", "db_name", "easy_go")
-	orm, err = xorm.NewEngine("mysql", username+":"+password+"@/"+dbName+"?charset=utf8")
+	dbName := Cfg.MustValue("db", "db_name", "go_display")
+	orm, err = xorm.NewEngine("mysql", username+":"+password+"@tcp("+server+":3306)/"+dbName+"?charset=utf8")
 	PanicIf(err)
 	orm.TZLocation = time.Local
 	orm.ShowSQL = Cfg.MustBool("db", "show_sql", false)
