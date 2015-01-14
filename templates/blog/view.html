@@ -214,9 +214,9 @@
             success: function (data) {
                 if (!data.success) {
                     bootbox.alert(data.message, null);
-                }
-                content: $('#content').val("");
-                window.location.reload();
+                } else {
+                	window.location.reload();
+				}
             }
         });
     }
@@ -237,8 +237,9 @@
                                 success: function (data) {
                                     if (!data.success) {
                                         bootbox.alert(data.message, null);
-                                    }
-                                    window.location.reload();
+                                    } else {
+                                    	window.location.reload();
+									 }
                                 }
                             });
                         }
